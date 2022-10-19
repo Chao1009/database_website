@@ -2,6 +2,8 @@
 from django.db import models
 from django.urls import reverse
 from django.db.models import Count, Max
+import datetime as dt
+from django.core.validators import MaxValueValidator, MinValueValidator
 # from django.utils import timezone
 # from django.db.models.signals import post_save
 # from django.db.models import Sum
@@ -23,7 +25,9 @@ class Product(models.Model):
     sku = models.CharField(max_length=50, default='0', primary_key=True)
     name = models.CharField(max_length=100)
     brand = models.CharField(max_length=30)
+    category = models.CharField(max_length=20)
     image_src = models.CharField(max_length=255)
+    first_created_on = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -47,6 +51,13 @@ class Product(models.Model):
                   .annotate(count=Count('size'), price=Max('price'))
         return sorted(results, key=lambda x: extract_size_digits(x['size']))
 
+    def is_new(self, max_days=30):
+        if not self.first_created_on.null():
+            start_date = dt.datetime.strptime(self.first_created_on, '%Y-%m-%d %H:%M:%S')
+            end_date = dt.datetime.today()
+            return (end_date - start_date).days < max_days
+        return False
+
 
 # Product Item (individual item for each product)
 class ProductItem(models.Model):
@@ -69,6 +80,27 @@ class ProductItem(models.Model):
     lost = models.BooleanField(default=False)
     lost_on = models.DateTimeField(null=True, blank=True)
     lost_cost = models.FloatField(blank=True, null=True)
+
+    def __str__(self):
+        return self.product.name
+
+
+class TopSeller(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    priority = models.IntegerField(default=1,
+                                   validators=[MaxValueValidator(10), MinValueValidator(1)],
+                                   help_text='With 10 the top priority and 1 the lowest')
+    expired = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.product.name
+
+
+class StockValidater(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    size = models.CharField(max_length=10)
+    counts = models.IntegerField(default=1, validators=[MinValueValidator(0)])
+    checked_on = models.DateTimeField(null=False, blank=False, auto_now_add=True)
 
     def __str__(self):
         return self.product.name
