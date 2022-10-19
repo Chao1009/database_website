@@ -1,0 +1,89 @@
+{% extends "search/base.html" %}
+
+{% block content %}
+  <style>
+    table {
+      font-family: arial, sans-serif;
+      border-collapse: collapse;
+      width: 80%;
+    }
+
+    td, th {
+      border: 1px solid #dddddd;
+      text-align: left;
+      padding: 8px;
+      font-weight: bold;
+    }
+
+    tr:nth-child(even) {
+      background-color: #cae4f1;
+    }
+
+    tbody td, tbody th {
+      font-size: 150%;
+    }
+
+    p.ex1 {
+      font-family: arial, sans-serif;
+      font-size: 160%;
+      font-weight: bold;
+    }
+  </style>
+
+  <main class="mt-5 pt-4">
+    <div class="container dark-grey-text mt-5">
+
+      <!--Grid row-->
+      <div class="row wow fadeIn">
+
+        <!--Grid column-->
+        <div class="col-md-4 mb-4">
+          <p class="ex1"> {{object.name}}
+             <br> {{object.sku}} </p>
+          <img src="{{object.image_src}}" class="img-fluid" alt="">
+
+        </div>
+        <!--Grid column-->
+
+        <!--Grid column-->
+        <div class="col-md-8 mb-4">
+
+          <!--Content-->
+          <div class="p-4">
+
+            <div class="mb-3">
+              <a href="">
+                <span class="badge purple mr-1">{{ object.get_category_display }}</span>
+              </a>
+            </div>
+
+            <table>
+              <tr>
+                <th>Size</th>
+                <th>Quantity</th>
+                <th>Price</th>
+              </tr>
+              {% for item in object.get_summary %}
+              <tr>
+                <td>{{item.size}}</td>
+                <td>{{item.count}}</td>
+                <td>${{item.price}}</td>
+              </tr>
+              {% endfor %}
+            </table>
+
+          </div>
+          <!--Content-->
+
+        </div>
+        <!--Grid column-->
+
+      </div>
+      <!--Grid row-->
+
+      <hr>
+
+    </div>
+  </main>
+
+{% endblock content %}

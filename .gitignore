@@ -141,4 +141,4 @@ GitHub.sublime-settings
 
 # CUSTOMIZED ITEMS
 # static file location
-./staticfiles/*
+staticfiles/*
