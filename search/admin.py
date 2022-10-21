@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Product, ProductItem
+from .models import Product, ProductItem, StockItem
 from import_export.admin import ImportExportModelAdmin
 from import_export import fields, resources
 from import_export.widgets import ForeignKeyWidget
@@ -35,5 +35,18 @@ class ProductItemAdmin(ImportExportModelAdmin):
     resource_class = ProductItemResource
 
 
+class StockItemResource(resources.ModelResource):
+
+    class Meta:
+        model = StockItem
+        skip_unchanged = True
+        report_skipped = True
+
+
+class StockItemAdmin(ImportExportModelAdmin):
+    resource_class = StockItemResource
+
+
 admin.site.register(Product, ProductAdmin)
 admin.site.register(ProductItem, ProductItemAdmin)
+admin.site.register(StockItem, StockItemAdmin)

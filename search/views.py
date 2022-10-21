@@ -8,15 +8,16 @@ from django.shortcuts import render, redirect
 from django.db.models import Q
 from django.views.generic import ListView, DetailView, View
 
-from .models import Product, ProductItem
+from .models import Product, ProductItem, StockItem
 
 
 def index(request):
     items = []
     if request.method == 'POST':
-        if request.POST['submit'] == 'lucky':
-            allprod = list(Product.objects.all())
-            items = random.sample(allprod, min(6, len(allprod)))
+        if request.POST['submit'] == 'top':
+            items = list(Product.objects.filter(top_seller=True).order_by('top_seller_priority'))
+            if len(items) > 10:
+                items = items[:10]
         else:
             search_str = request.POST['search']
             if search_str:

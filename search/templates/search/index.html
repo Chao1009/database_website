@@ -40,7 +40,7 @@
       </div>
       <p>
         <button type="submit" name="submit" value="search" class="btn btn-primary my-2">Find Your Shoes</button>
-        <button type="submit" name="submit" value="lucky" class="btn btn-secondary my-2">I'm Feeling Lucky</button>
+        <button type="submit" name="submit" value="top" class="btn btn-secondary my-2">Top Sellers</button>
       </p>
       </form>
     </div>
@@ -59,7 +59,7 @@
                 <div class="btn-group">
                   <a type="button" href="{{ item.get_absolute_url }}" class="btn btn-sm btn-outline-secondary">View</a>
                 </div>
-                <small class="text-muted">${{ item.price }}</small>
+                <small class="text-muted">{{ item.get_price_range }}</small>
               </div>
             </div>
           </div>

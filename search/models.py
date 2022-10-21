@@ -1,7 +1,7 @@
 # from django.conf import settings
 from django.db import models
 from django.urls import reverse
-from django.db.models import Count, Max
+from django.db.models import Count, Min, Max
 import datetime as dt
 from django.core.validators import MaxValueValidator, MinValueValidator
 # from django.utils import timezone
@@ -24,10 +24,19 @@ def extract_size_digits(size_str):
 class Product(models.Model):
     sku = models.CharField(max_length=50, default='0', primary_key=True)
     name = models.CharField(max_length=100)
-    brand = models.CharField(max_length=30)
-    category = models.CharField(max_length=20)
-    image_src = models.CharField(max_length=255)
+    brand = models.CharField(max_length=30, blank=True)
+    category = models.CharField(max_length=20, blank=True)
+    image_src = models.CharField(max_length=255, blank=True)
     first_created_on = models.DateTimeField(null=True, blank=True)
+    top_seller = models.BooleanField(
+        default=False,
+        help_text='Check it and this product will be shown as topsellers',
+    )
+    top_seller_priority = models.IntegerField(
+        default=1,
+        validators=[MaxValueValidator(10), MinValueValidator(1)],
+        help_text='With 1 the top priority and 10 the lowest',
+    )
 
     def __str__(self):
         return self.name
@@ -42,13 +51,13 @@ class Product(models.Model):
         prices = [item.price for item in items]
         min_price, max_price = min(prices), max(prices)
         if min_price != max_price:
-            return '{:.2f} - {:.2f}'.format(min_price, max_price)
-        return '{:.2f}'.format(min_price)
+            return '${:.2f} - ${:.2f}'.format(min_price, max_price)
+        return '${:.2f}'.format(min_price)
 
     def get_summary(self):
         results = ProductItem.objects.filter(product=self)\
                   .values('size')\
-                  .annotate(count=Count('size'), price=Max('price'))
+                  .annotate(count=Count('size'), price=Min('price'))
         return sorted(results, key=lambda x: extract_size_digits(x['size']))
 
     def is_new(self, max_days=30):
@@ -85,18 +94,8 @@ class ProductItem(models.Model):
         return self.product.name
 
 
-class TopSeller(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    priority = models.IntegerField(default=1,
-                                   validators=[MaxValueValidator(10), MinValueValidator(1)],
-                                   help_text='With 10 the top priority and 1 the lowest')
-    expired = models.BooleanField(default=False)
-
-    def __str__(self):
-        return self.product.name
-
-
-class StockValidater(models.Model):
+# a data model to check the stock
+class StockItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     size = models.CharField(max_length=10)
     counts = models.IntegerField(default=1, validators=[MinValueValidator(0)])

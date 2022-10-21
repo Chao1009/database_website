@@ -9,6 +9,14 @@ from bs4 import BeautifulSoup
 from serpapi import GoogleSearch
 
 
+# it is likely to be changed
+ROOT_DIR = r'E:\Django\database_search'
+
+DATA_DIR = os.path.join(ROOT_DIR, 'data')
+DATA_PATH = os.path.join(DATA_DIR, 'Product-2022-10-20.csv')
+IMAGE_DIR = os.path.join(ROOT_DIR,  'search', 'static', 'images')
+
+
 def get_original_images(cooked_soup):
     """
     https://kodlogs.com/34776/json-decoder-jsondecodeerror-expecting-property-name-enclosed-in-double-quotes
@@ -65,56 +73,51 @@ def get_original_images(cooked_soup):
 
     return google_images
 
+if __name__ == '__main__':
+    dfp = pd.read_csv(DATA_PATH).fillna('').set_index('sku')
 
-ROOT_DIR = r'D:\Development\Django\database_search'
-DATA_DIR = os.path.join(ROOT_DIR, 'data')
-DATA_PATH = os.path.join(DATA_DIR, 'Product-2022-10-12.csv')
-IMAGE_DIR = os.path.join(ROOT_DIR,  'search', 'static', 'images')
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.114 Safari/537.36'
+    }
 
-dfp = pd.read_csv(DATA_PATH).fillna('').set_index('sku')
+    params = {
+        'q': '',  # search query
+        'tbm': 'isch',  # image results
+        'hl': 'en',  # language of the search
+        'gl': 'us',  # country where search comes from
+        'ijn': '0'  # page number
+    }
 
-headers = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.114 Safari/537.36'
-}
+    for sku in dfp.index:
+        # do not repeat the search for existing images
+        if os.path.exists(os.path.join(IMAGE_DIR, '{}.png'.format(sku))):
+            # print('skip SKU: {} because an image already exists.'.format(sku))
+            # update image path
+            dfp.loc[sku, 'image_src'] = '../static/images/{}.png'.format(sku)
+            continue
 
-params = {
-    'q': '',  # search query
-    'tbm': 'isch',  # image results
-    'hl': 'en',  # language of the search
-    'gl': 'us',  # country where search comes from
-    'ijn': '0'  # page number
-}
+        try:
+            # search image
+            print('try downloading image for SKU:{}'.format(sku))
+            params.update({'q': '{} stockx'.format(sku)})
+            html = requests.get('https://www.google.co.in/search', params=params, headers=headers, timeout=30)
+            soup = BeautifulSoup(html.text, 'lxml')
+            searched_images = get_original_images(soup)
 
-for sku in dfp.index:
-    # do not repeat the search for existing images
-    if os.path.exists(os.path.join(IMAGE_DIR, '{}.png'.format(sku))):
-        # print('skip SKU: {} because an image already exists.'.format(sku))
-        # update image path
-        dfp.loc[sku, 'image_src'] = '../static/images/{}.png'.format(sku)
-        continue
+            # save image
+            image_url = searched_images[0]['original']
+            img_data = requests.get(image_url).content
+            with open(os.path.join(IMAGE_DIR, '{}.png'.format(sku)), 'wb') as handler:
+                handler.write(img_data)
+            print('downloading image from {}'.format(image_url))
 
-    try:
-        # search image
-        print('try downloading image for SKU:{}'.format(sku))
-        params.update({'q': '{} stockx'.format(sku)})
-        html = requests.get('https://www.google.co.in/search', params=params, headers=headers, timeout=30)
-        soup = BeautifulSoup(html.text, 'lxml')
-        searched_images = get_original_images(soup)
+            # update image path
+            dfp.loc[sku, 'image_src'] = '../static/images/{}.png'.format(sku)
 
-        # save image
-        image_url = searched_images[0]['original']
-        img_data = requests.get(image_url).content
-        with open(os.path.join(IMAGE_DIR, '{}.png'.format(sku)), 'wb') as handler:
-            handler.write(img_data)
-        print('downloading image from {}'.format(image_url))
-
-        # update image path
-        dfp.loc[sku, 'image_src'] = '../static/images/{}.png'.format(sku)
-
-    except Exception as e:
-        print(searched_images)
-        print(e)
-        pass
+        except Exception as e:
+            print(searched_images)
+            print(e)
+            pass
 
 
-dfp.reset_index().to_csv(DATA_PATH.replace('.csv', '_img.csv'), index=False)
+    dfp.reset_index().to_csv(DATA_PATH.replace('.csv', '_img.csv'), index=False)
