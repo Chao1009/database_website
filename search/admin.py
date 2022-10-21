@@ -17,6 +17,9 @@ class ProductResource(resources.ModelResource):
 
 class ProductAdmin(ImportExportModelAdmin):
     resource_class = ProductResource
+    list_filter = ('top_seller', 'category')
+    list_display = ('name', 'sku', 'total_count', 'top_seller')
+    list_editable = ('top_seller',)
 
 
 class ProductItemResource(resources.ModelResource):

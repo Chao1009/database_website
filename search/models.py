@@ -41,10 +41,10 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
-    def get_absolute_url(self):
+    def absolute_url(self):
         return reverse('product_detail', args=[str(self.sku)])
 
-    def get_price_range(self, size='all'):
+    def price_range(self, size='all'):
         items = ProductItem.objects.filter(product=self)
         if size != 'all':
             items = items.filter(size=size)
@@ -54,11 +54,14 @@ class Product(models.Model):
             return '${:.2f} - ${:.2f}'.format(min_price, max_price)
         return '${:.2f}'.format(min_price)
 
-    def get_summary(self):
+    def summary(self):
         results = ProductItem.objects.filter(product=self)\
                   .values('size')\
                   .annotate(count=Count('size'), price=Min('price'))
         return sorted(results, key=lambda x: extract_size_digits(x['size']))
+
+    def total_count(self):
+        return len(ProductItem.objects.filter(product=self))
 
     def is_new(self, max_days=30):
         if not self.first_created_on.null():

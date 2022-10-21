@@ -53,7 +53,7 @@
 
             <div class="mb-3">
               <a href="">
-                <span class="badge purple mr-1">{{ object.get_category_display }}</span>
+                <span class="badge purple mr-1">{{ object.category_display }}</span>
               </a>
             </div>
 
@@ -63,7 +63,7 @@
                 <th>Quantity</th>
                 <th>Price</th>
               </tr>
-              {% for item in object.get_summary %}
+              {% for item in object.summary %}
               <tr>
                 <td>{{item.size}}</td>
                 <td>{{item.count}}</td>
