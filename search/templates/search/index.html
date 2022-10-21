@@ -1,6 +1,31 @@
 {% load static %}
 <!doctype html>
 <html lang="en">
+  <style>
+    #search-categories {
+      height: 44px;
+      border: none;
+      overflow: hidden;
+    }
+    #search-categories::-moz-focus-inner {
+      border: 0;
+    }
+    #search-categories:focus {
+      outline: none;
+    }
+    #search-categories option {
+      width: 70px;
+      font-size: 12px;
+      padding: 2px 0;
+      text-align: center;
+      margin-right: 8px;
+      display: inline-block;
+      cursor: pointer;
+      border:rgb(0, 0, 0) solid 1px;
+      border-radius: 5px;
+      color: rgb(0, 0, 0);
+    }
+  </style>
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -28,22 +53,35 @@
   <body>
 
 <main role="main">
-
   <section class="jumbotron text-center">
     <div class="container">
       <h1 class="jumbotron-heading">Search the Store</h1>
       <p class="lead text-muted">Search shoes by product name or SKU</p>
       <form method="POST">
-      <div class="input-group mb-3">
-          {% csrf_token %}
-          <input type="text" name="search" class="form-control" aria-label="Username">
-      </div>
-      <p>
-        <button type="submit" name="submit" value="search" class="btn btn-primary my-2">Find Your Shoes</button>
-        <button type="submit" name="submit" value="top" class="btn btn-secondary my-2">Top Sellers</button>
-      </p>
+        <div class="input-group mb-3">
+            {% csrf_token %}
+            <input type="text" name="search" class="form-control" aria-label="Username">
+        </div>
+        <p>
+          <select name="categories" id="search-categories" multiple>
+            {% for cat in categories %}
+              <option value="{{ cat }}">{{ cat }}</option>
+            {% endfor %}
+          </select>
+          <button type="submit" name="submit" value="search" class="btn btn-primary my-2">Find Your Shoes</button>
+          <button type="submit" name="submit" value="top" class="btn btn-secondary my-2">Top Sellers</button>
+        </p>
       </form>
     </div>
+    <script>
+      document.getElementById('search-categories').onchange = function() {
+        localStorage.setItem('selectedtem', document.getElementById('search-categories').value);
+      };
+
+      if (localStorage.getItem('selectedtem')) {
+        document.getElementById('search-categories').options[localStorage.getItem('selectedtem')].selected = true;
+      }
+    </script>
   </section>
 
   <div class="album py-5 bg-light">
