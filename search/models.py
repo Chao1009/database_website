@@ -1,7 +1,7 @@
 # from django.conf import settings
 from django.db import models
 from django.urls import reverse
-from django.db.models import Count, Min, Max
+from django.db.models import Q, Count, Min, Max
 import datetime as dt
 from django.core.validators import MaxValueValidator, MinValueValidator
 # from django.utils import timezone
@@ -58,7 +58,7 @@ class Product(models.Model):
         return '${:.2f}'.format(min_price)
 
     def summary(self):
-        results = ProductItem.objects.filter(product=self)\
+        results = ProductItem.objects.filter(Q(product=self) & Q(sold=False))\
                   .values('size')\
                   .annotate(count=Count('size'), price=Min('price'))
         print(results)

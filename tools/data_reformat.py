@@ -19,9 +19,10 @@ CAT_SIZE_PATH = os.path.join(ROOT_DIR, 'search', 'static', 'cat_size.json')
 # DATETIME = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 DATE = '2022-10-20'
 DATETIME = '2022-10-20 00:00:00'
+SIZE_NULL_VALUE = 'Unknown'
 
 
-def regulated_size(cat_size_book, vcat, vsize, verbose=0, null_value='NULL'):
+def regulated_size(cat_size_book, vcat, vsize, verbose=0, null_value=SIZE_NULL_VALUE):
     # print(vcat, vsize)
     # check category
     if vcat not in cat_size_book.keys():
@@ -71,11 +72,11 @@ if __name__ == '__main__':
     # regulate the category/size
     df['size'] = df['size'].astype(str).str.upper()
     df.loc[:, 'rsize'] = df.apply(lambda x: regulated_size(cat_size, x['category'], x['size']), axis=1)
-    mask = df['rsize'] == 'NULL'
+    mask = df['rsize'] == SIZE_NULL_VALUE
     if sum(mask):
         print('WARNING')
         print('{} entries cannot find correct size in the size book.'.format(sum(mask)))
-        print(df.loc[df['rsize'] == 'NULL'])
+        print(df.loc[df['rsize'] == SIZE_NULL_VALUE])
 
     # get product table
     dfp = df.groupby('sku').agg({'name': 'first', 'brand': 'first', 'category': 'first'})\

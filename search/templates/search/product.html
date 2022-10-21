@@ -68,9 +68,9 @@
                 <td>{{item.size}}</td>
                 <td>${{item.price}}</td>
                 {% if item.count > 0 %}
-                  <td style="color:#228c22">In Stock</td>
+                  <td style="color:#228c22">In Store</td>
                 {% else %}
-                  <td style="color:#8b0000">Restocking</td>
+                  <td style="color:#8b0000">Out-of-stock</td>
                 {% endif %}
               </tr>
               {% endfor %}
