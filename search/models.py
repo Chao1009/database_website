@@ -38,6 +38,9 @@ class Product(models.Model):
         help_text='With 1 the top priority and 10 the lowest',
     )
 
+    class Meta:
+        verbose_name_plural = "1. Products"
+
     def __str__(self):
         return self.name
 
@@ -96,6 +99,9 @@ class ProductItem(models.Model):
     def __str__(self):
         return self.product.name
 
+    class Meta:
+        verbose_name_plural = "2. Product Items"
+
 
 # a data model to check the stock
 class StockItem(models.Model):
@@ -106,3 +112,13 @@ class StockItem(models.Model):
 
     def __str__(self):
         return self.product.name
+
+    class Meta:
+        verbose_name_plural = "3. Stock Items"
+
+
+class SaleSummary(ProductItem):
+    class Meta:
+        proxy = True
+        verbose_name = '* Sale Summary'
+        verbose_name_plural = '* Sales Summary'
