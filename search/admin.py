@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Product, ProductItem, StockItem, SaleSummary
+from .models import *
 from import_export.admin import ImportExportModelAdmin
 from import_export import fields, resources
 from import_export.widgets import ForeignKeyWidget
@@ -51,19 +51,16 @@ class ProductItemAdmin(ImportExportModelAdmin):
     get_category.admin_order_field = 'product__category'
 
 
-class StockItemResource(resources.ModelResource):
+class InventoryDatumResources(resources.ModelResource):
 
     class Meta:
-        model = StockItem
+        model = InventoryDatum
         skip_unchanged = True
         report_skipped = True
 
 
-class StockItemAdmin(ImportExportModelAdmin):
-    resource_class = StockItemResource
-
-
-
+class InventoryDatumAdmin(ImportExportModelAdmin):
+    resource_class = InventoryDatumResources
 
 
 def get_next_in_date_hierarchy(request, date_hierarchy):
@@ -156,5 +153,5 @@ class SaleSummaryAdmin(admin.ModelAdmin):
 
 admin.site.register(Product, ProductAdmin)
 admin.site.register(ProductItem, ProductItemAdmin)
-admin.site.register(StockItem, StockItemAdmin)
+admin.site.register(InventoryDatum, InventoryDatumAdmin)
 admin.site.register(SaleSummary, SaleSummaryAdmin)

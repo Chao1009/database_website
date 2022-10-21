@@ -14,16 +14,16 @@
       outline: none;
     }
     #search-categories option {
-      width: 70px;
-      font-size: 12px;
-      padding: 2px 0;
+      width: fit-content;
+      font-size: 20px;
+      padding: 2px 8px;
       text-align: center;
       margin-right: 8px;
       display: inline-block;
       cursor: pointer;
-      border:rgb(0, 0, 0) solid 1px;
+      border:rgb(50, 50, 50) solid 1px;
       border-radius: 5px;
-      color: rgb(0, 0, 0);
+      color: rgb(50, 50, 50);
     }
   </style>
   <head>
@@ -58,16 +58,22 @@
       <h1 class="jumbotron-heading">Search the Store</h1>
       <p class="lead text-muted">Search shoes by product name or SKU</p>
       <form method="POST">
+        <p>
+          <select name="categories" id="search-categories" multiple>
+            {% for cat in categories %}
+              {% if cat.selected %}
+                <option value="{{ cat.name }}" selected>{{ cat.name }}</option>
+              {% else %}
+                <option value="{{ cat.name }}">{{ cat.name }}</option>
+              {% endif %}
+            {% endfor %}
+          </select>
+        </p>
         <div class="input-group mb-3">
             {% csrf_token %}
             <input type="text" name="search" class="form-control" aria-label="Username">
         </div>
         <p>
-          <select name="categories" id="search-categories" multiple>
-            {% for cat in categories %}
-              <option value="{{ cat }}">{{ cat }}</option>
-            {% endfor %}
-          </select>
           <button type="submit" name="submit" value="search" class="btn btn-primary my-2">Find Your Shoes</button>
           <button type="submit" name="submit" value="top" class="btn btn-secondary my-2">Top Sellers</button>
         </p>

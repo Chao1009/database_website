@@ -8,7 +8,7 @@ from django.shortcuts import render, redirect
 from django.db.models import Q
 from django.views.generic import ListView, DetailView, View
 
-from .models import Product, ProductItem, StockItem
+from .models import *
 from django.contrib.staticfiles.storage import staticfiles_storage
 
 
@@ -16,14 +16,17 @@ cat_size = json.load(open(staticfiles_storage.path('cat_size.json')))
 
 
 def index(request):
-    cats = list(cat_size.keys())
+    cats = [{'name': c, 'selected': False} for c in cat_size.keys()]
     items = []
 
     if request.method == 'POST':
         if 'categories' not in request.POST.keys():
             products = Product.objects.all()
+
         else:
-            products = Product.objects.filter(category=request.POST['categories'])
+            cat = request.POST['categories']
+            products = Product.objects.filter(category=cat)
+            cats = [{'name': c, 'selected': False if c != cat else True} for c in cat_size.keys()]
         if request.POST['submit'] == 'top':
             items = list(products.filter(top_seller=True).order_by('top_seller_priority'))
             if len(items) > 10:

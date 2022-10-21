@@ -103,8 +103,9 @@ class ProductItem(models.Model):
         verbose_name_plural = "2. Product Items"
 
 
-# a data model to check the stock
-class StockItem(models.Model):
+# a data model to check the inventory
+class InventoryDatum(models.Model):
+    id = models.BigAutoField(primary_key=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     size = models.CharField(max_length=10)
     counts = models.IntegerField(default=1, validators=[MinValueValidator(0)])
@@ -114,7 +115,7 @@ class StockItem(models.Model):
         return self.product.name
 
     class Meta:
-        verbose_name_plural = "3. Stock Items"
+        verbose_name_plural = "3. Inventory Data"
 
 
 class SaleSummary(ProductItem):
