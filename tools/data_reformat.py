@@ -72,8 +72,8 @@ if __name__ == '__main__':
     item_data = []
     begin = 1
     stockx_price_inc = 100
-    today = datetime.date.today().strftime('%Y-%d-%m')
-    now = datetime.datetime.now().strftime('%Y-%d-%m %H:%M:%S')
+    today = datetime.date.today().strftime('%Y-%m-%d')
+    now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     for sku, size, stockx_price, count in df[['sku', 'rsize', 'stock_x', 'count']].values:
         ref_price = np.max([float(x) for x in str(stockx_price).split('/')])
         price = ref_price + stockx_price_inc
