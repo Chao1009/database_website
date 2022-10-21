@@ -12,25 +12,28 @@ from .models import *
 from django.contrib.staticfiles.storage import staticfiles_storage
 
 
+N_TOP_SELLER = 6
 cat_size = json.load(open(staticfiles_storage.path('cat_size.json')))
 
 
 def index(request):
-    cats = [{'name': c, 'selected': False} for c in cat_size.keys()]
+    cats = [{'name': 'All', 'selected': True}]\
+         + [{'name': c, 'selected': False} for c in cat_size.keys()]
     items = []
 
     if request.method == 'POST':
-        if 'categories' not in request.POST.keys():
+        if 'categories' not in request.POST.keys() or request.POST['categories'] == 'All':
             products = Product.objects.all()
 
         else:
             cat = request.POST['categories']
             products = Product.objects.filter(category=cat)
-            cats = [{'name': c, 'selected': False if c != cat else True} for c in cat_size.keys()]
+            cats = [{'name': 'All', 'selected': False}]\
+                 + [{'name': c, 'selected': False if c != cat else True} for c in cat_size.keys()]
         if request.POST['submit'] == 'top':
             items = list(products.filter(top_seller=True).order_by('top_seller_priority'))
-            if len(items) > 10:
-                items = items[:10]
+            if len(items) > N_TOP_SELLER:
+                items = items[:N_TOP_SELLER]
         else:
             search_str = request.POST['search']
             items = products.filter(Q(sku__contains=search_str) | Q(name__contains=search_str))
