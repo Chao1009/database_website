@@ -60,14 +60,18 @@
             <table>
               <tr>
                 <th>Size</th>
-                <th>Quantity</th>
                 <th>Price</th>
+                <th>Availability</th>
               </tr>
               {% for item in object.summary %}
               <tr>
                 <td>{{item.size}}</td>
-                <td>{{item.count}}</td>
                 <td>${{item.price}}</td>
+                {% if item.count > 0 %}
+                  <td style="color:#228c22">In Stock</td>
+                {% else %}
+                  <td style="color:#8b0000">Restocking</td>
+                {% endif %}
               </tr>
               {% endfor %}
             </table>

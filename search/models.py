@@ -61,6 +61,7 @@ class Product(models.Model):
         results = ProductItem.objects.filter(product=self)\
                   .values('size')\
                   .annotate(count=Count('size'), price=Min('price'))
+        print(results)
         return sorted(results, key=lambda x: extract_size_digits(x['size']))
 
     def total_count(self):
