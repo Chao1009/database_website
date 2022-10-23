@@ -5,6 +5,11 @@ from import_export import fields, resources
 from import_export.widgets import ForeignKeyWidget
 from django.db.models import Count, Sum, Min, Max, DateTimeField
 from django.db.models.functions import Trunc
+import json
+
+
+# use this to pass datetime values to js (ignore timezone now)
+ISO8601_DT_FORMAT = '%Y-%m-%dT%H:%M:%S'
 
 
 class ProductResource(resources.ModelResource):
@@ -80,7 +85,6 @@ class SaleSummaryAdmin(admin.ModelAdmin):
     date_hierarchy = 'sold_on'
     # Prevent additional queries for pagination.
     show_full_result_count = False
-
     list_filter = ('product__category', 'product__brand', 'product')
 
     def has_add_permission(self, request):
@@ -101,7 +105,6 @@ class SaleSummaryAdmin(admin.ModelAdmin):
         # self.get_queryset would return the base queryset. ChangeList
         # apply the filters from the request so this is the only way to
         # get the filtered queryset.
-
         try:
             qs = response.context_data['cl'].queryset.filter(sold=True)
         except (AttributeError, KeyError):
@@ -112,7 +115,6 @@ class SaleSummaryAdmin(admin.ModelAdmin):
             return response
 
         # List view
-
         metrics = {
             'total': Count('id'),
             'total_sales': Sum('sold_price'),
@@ -129,25 +131,18 @@ class SaleSummaryAdmin(admin.ModelAdmin):
         period = get_next_in_date_hierarchy(request, self.date_hierarchy)
         response.context_data['period'] = period
         summary_over_time = qs.annotate(
-            period=Trunc('sold_on', 'day', output_field=DateTimeField()),
+            period=Trunc('sold_on', period, output_field=DateTimeField()),
         ).values('period')\
-        .annotate(total=Sum('sold_price'))\
-        .order_by('period')
+         .annotate(total=Sum('sold_price'))\
+         .order_by('period')
 
-        summary_range = summary_over_time.aggregate(
-            low=Min('total'),
-            high=Max('total'),
-        )
-        high = summary_range.get('high', 0)
-        low = summary_range.get('low', 0)*0.8
-
-        response.context_data['summary_over_time'] = [{
-            'period': x['period'],
-            'total': x['total'] or 0,
-            'pct': \
-               ((x['total'] or 0) - low) / (high - low) * 100
-               if high > low else 0,
-        } for x in summary_over_time]
+        response.context_data['json_chart_data'] = json.dumps({
+            'period': period,
+            'sales_over_time': [{
+                'x': x['period'].strftime(ISO8601_DT_FORMAT),
+                'y': x['total'] or 0,
+            } for x in summary_over_time]
+        })
 
         return response
 

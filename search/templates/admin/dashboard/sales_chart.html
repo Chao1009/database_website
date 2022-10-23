@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<script type="text/javascript">
+	window.onload = function () {
+	    var data = JSON.parse("{{json_chart_data|escapejs}}");
+	    var sales_data = [];
+	    data["sales_over_time"].forEach((v, i) => sales_data.push({x: new Date(v["x"]), y: v["y"]}));
+	    console.log(sales_data);
+	    var chart_data = [{
+            indexLabelFontColor: "darkSlateGray",
+            name: "views",
+            type: "area",
+            color: "rgba(0,75,141,0.7)",
+            markerSize:8,
+            dataPoints: sales_data
+        }]
+		var chart = new CanvasJS.Chart("chartContainer",
+		{
+			title: {
+				text: "Sales of Kickz Maryland"
+			},
+			axisX:{
+				valueFormatString: "DD-MMM-YY" ,
+				interval: 1,
+				intervalType: data["period"],
+				labelAngle: -45,
+				labelFontColor: "rgb(0,75,141)"
+			},
+			axisY: {
+				title: "Sales ($)",
+				interlacedColor: "azure",
+				tickColor: "azure",
+				titleFontColor: "rgb(0,75,141)",
+				valueFormatString: "#,##0.##",
+				interval: 100
+			},
+			data: chart_data
+		});
+
+		chart.render();
+	}
+</script>
+<script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+</head>
+<body>
+	<div id="chartContainer" style="height: 300px; width: 100%;">
+	</div>
+</body>
+</html>

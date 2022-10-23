@@ -19,7 +19,7 @@
                 <th> <div class="text"> <a href="#"> SKU </a> </div> </th>
                 <th> <div class="text"> <a href="#"> Name </a> </div> </th>
                 <th> <div class="text"> <a href="#"> Units </a> </div> </th>
-                <th> <div class="text"> <a href="#"> Total Sales </a> </div> </th>
+                <th> <div class="text"> <a href="#"> Sales </a> </div> </th>
                 <th> <div class="text"> <a href="#"><strong> % Of Total Sales </strong></a> </div> </th>
             </tr>
         </thead>
@@ -44,78 +44,10 @@
     </table>
 </div>
 
-<h2> {% blocktrans %} Sales time (by {{ period}}) {% endblocktrans %} </h2>
+<h2> {% blocktrans %} Sales over time (by {{ period }}) {% endblocktrans %} </h2>
 
-<style>
-.bar-chart {
-  height: 160px;
-  padding-top: 60px;
-  display: flex;
-  justify-content: space-around;
-  overflow: hidden;
+{% include "admin/dashboard/sales_chart.html" %}
 
-}
-.bar-chart .bar {
-    background-color: #79aec8;
-    flex: 100%;
-    align-self: flex-end;
-    margin-right: 2px;
-    position: relative;
-}
-.bar-chart .bar:last-child {
-    margin: 0;
-}
-.bar-chart .bar:hover {
-    background-color: #417690;
-}
-
-.bar-chart .bar .bar-tooltip {
-    user-select: none;
-    -moz-user-select: none;
-    -webkit-user-select: none;
-    -ms-user-select: none;
-    position: relative;
-    z-index: 999;
-}
-.bar-chart .bar .bar-tooltip {
-    position: absolute;
-    top: -60px;
-    left: 50%;
-    transform: translateX(-50%);
-    text-align: center;
-    font-weight: bold;
-    opacity: 0;
-}
-.bar-chart .bar:first-child .bar-tooltip {
-    transform: initial;
-    text-align: initial;
-    left: 0;
-}
-.bar-chart .bar:last-child .bar-tooltip {
-    transform: initial;
-    text-align: right;
-    right: 0;
-    left: initial;
-}
-.bar-chart .bar:hover .bar-tooltip {
-    opacity: 1;
-}
-</style>
-
-{% timezone 'UTC' %}
-<div class="results">
-    <div class="bar-chart">
-    {% for x in summary_over_time %}
-        <div class="bar" style="height:{{x.pct}}%">
-            <div class="bar-tooltip">
-                {{x.total }}<br>
-                {{x.period | date:"d/m/Y H:i"}}
-            </div>
-        </div>
-    {% endfor %}
-    </div>
-</div>
-{% endtimezone %}
 {% endblock %}
 
 {% block pagination %}{% endblock %}
