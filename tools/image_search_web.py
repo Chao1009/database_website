@@ -14,7 +14,7 @@ ROOT_DIR = r'E:\Django\database_search'
 
 DATA_DIR = os.path.join(ROOT_DIR, 'data')
 DATA_PATH = os.path.join(DATA_DIR, 'Product-2022-10-20.csv')
-IMAGE_DIR = os.path.join(ROOT_DIR,  'search', 'static', 'images')
+IMAGE_DIR = os.path.join(ROOT_DIR,  'search', 'static', 'images', 'products')
 
 
 def get_original_images(cooked_soup):

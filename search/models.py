@@ -53,8 +53,9 @@ class Product(models.Model):
             items = items.filter(size=size)
         prices = [item.price for item in items]
         min_price, max_price = min(prices), max(prices)
-        if min_price != max_price:
-            return '${:.2f} - ${:.2f}'.format(min_price, max_price)
+        if min_price < max_price:
+            # return '${:.2f} - ${:.2f}'.format(min_price, max_price)
+            return 'From ${:.2f}'.format(min_price)
         return '${:.2f}'.format(min_price)
 
     def summary(self):
@@ -73,6 +74,9 @@ class Product(models.Model):
             end_date = dt.datetime.today()
             return (end_date - start_date).days < max_days
         return False
+
+    def local_image_src(self):
+        return r'static\images\products\{}.png'.format(self.sku)
 
 
 # Product Item (individual item for each product)
