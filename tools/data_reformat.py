@@ -1,5 +1,6 @@
 # reformat migrated data to product and productitem data to be imported
 import os
+import re
 import pandas as pd
 import numpy as np
 import json
@@ -19,10 +20,23 @@ CAT_SIZE_PATH = os.path.join(ROOT_DIR, 'search', 'static', 'cat_size.json')
 # DATETIME = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 DATE = '2022-10-20'
 DATETIME = '2022-10-20 00:00:00'
-SIZE_NULL_VALUE = 'Unknown'
+NULL_VALUE = 'Unknown'
+
+# brand dictionary, keyword, brand sub-brand
+BRAND_DICT = (
+    ('Dunk', 'Nike', 'Dunk'),
+    ('AJ[0-9]+', 'Air Jordan', 'AJ[0-9]+'),
+    ('Yeezy [0-9]+', 'Yeezy', 'Yeezy [0-9]+'),
+    ('RNNR', 'Yeezy', 'Foam RNNR'),
+    ('Slide', 'Yeezy', 'Yeezy Slide'),
+    ('AF1', 'Nike', 'Air Force 1'),
+    ('Yeezy Knit', 'Yeezy', 'Yeezy 350'),
+    ('Kobe [0-9]+', 'Nike', 'Kobe [0-9]+'),
+    ('NB[0-9]+', 'New Balance', 'NB[0-9]+'),
+)
 
 
-def regulated_size(cat_size_book, vcat, vsize, verbose=0, null_value=SIZE_NULL_VALUE):
+def regulated_size(cat_size_book, vcat, vsize, verbose=0, null_value=NULL_VALUE):
     # print(vcat, vsize)
     # check category
     if vcat not in cat_size_book.keys():
@@ -52,15 +66,26 @@ def regulated_size(cat_size_book, vcat, vsize, verbose=0, null_value=SIZE_NULL_V
     return null_value
 
 
+def find_brand(name, bdict=BRAND_DICT):
+    for kw, brand, subbrand in bdict:
+        match = re.search(kw, name)
+        if match:
+            match2 = re.search(subbrand, name)
+            if match2:
+                subbrand = match2.group(0)
+            return brand, subbrand
+    return NULL_VALUE, NULL_VALUE
+
+
 if __name__ == '__main__':
     # read category/size dictionary
     cat_size = json.load(open(CAT_SIZE_PATH))
 
     # read data file and regulate header names
-    df = pd.read_excel(RAWDATA_PATH, header=0).rename(columns={'Category1': 'Brand', 'Category2': 'Category'})
+    df = pd.read_excel(RAWDATA_PATH, header=0).rename(columns={'Category2': 'Category'})
     df.columns = [x.lower().replace(' ', '_') for x in df.columns]
     # header checks
-    required = ['brand', 'category', 'name', 'sku', 'size', 'stock_x', 'count']
+    required = ['category', 'name', 'sku', 'size', 'stock_x', 'count']
     check_pass = True
     for r in required:
         if r not in df.columns:
@@ -72,14 +97,22 @@ if __name__ == '__main__':
     # regulate the category/size
     df['size'] = df['size'].astype(str).str.upper()
     df.loc[:, 'rsize'] = df.apply(lambda x: regulated_size(cat_size, x['category'], x['size']), axis=1)
-    mask = df['rsize'] == SIZE_NULL_VALUE
+    mask = df['rsize'] == NULL_VALUE
     if sum(mask):
         print('WARNING')
         print('{} entries cannot find correct size in the size book.'.format(sum(mask)))
-        print(df.loc[df['rsize'] == SIZE_NULL_VALUE])
+        print(df.loc[mask])
+
+    # determine brand and subbrand
+    df.loc[:, ['brand', 'sub_brand']] = df['name'].apply(find_brand).to_list()
+    mask = (df['brand'] == NULL_VALUE) | (df['sub_brand'] == NULL_VALUE)
+    if sum(mask):
+        print('WARNING')
+        print('{} entries cannot find correct size in the size book.'.format(sum(mask)))
+        print(df.loc[mask])
 
     # get product table
-    dfp = df.groupby('sku').agg({'name': 'first', 'brand': 'first', 'category': 'first'})\
+    dfp = df.groupby('sku').agg({'name': 'first', 'brand': 'first', 'sub_brand': 'first', 'category': 'first'})\
             .reset_index()
     dfp.loc[:, 'id'] = ''
     dfp.loc[:, 'image_src'] = ''

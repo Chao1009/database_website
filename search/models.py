@@ -24,7 +24,8 @@ def extract_size_digits(size_str):
 class Product(models.Model):
     sku = models.CharField(max_length=50, default='0', primary_key=True)
     name = models.CharField(max_length=100)
-    brand = models.CharField(max_length=30, blank=True)
+    brand = models.CharField(max_length=20, blank=True)
+    sub_brand = models.CharField(max_length=30, blank=True)
     category = models.CharField(max_length=20, blank=True)
     image_src = models.CharField(max_length=255, blank=True)
     first_created_on = models.DateTimeField(null=True, blank=True)
