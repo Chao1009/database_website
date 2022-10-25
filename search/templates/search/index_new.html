@@ -1,5 +1,5 @@
 {% extends "search/base.html" %}
-
+{% load static %}
 {% block content %}
   <main>
     <div class="container">
@@ -21,14 +21,13 @@
 
           <!-- Links -->
           <ul class="navbar-nav mr-auto">
-            <li class="nav-item active">
-              <a class="nav-link" href="#">All
-                <span class="sr-only">(current)</span>
-              </a>
-            </li>
             {% for brand in brands %}
+            {% if brand.selected %}
+            <li class="nav-item active">
+            {% else %}
             <li class="nav-item">
-              <a class="nav-link" href="#">{{brand}}</a>
+            {% endif %}
+              <a class="nav-link" href="?brand={{brand.name}}">{{brand.name}}</a>
             </li>
             {% endfor %}
           </ul>
@@ -48,50 +47,30 @@
       <!--Section: Products v.3-->
       <section class="text-center mb-4">
 
-        <div class="row wow fadeIn">
-
-          {% for item in object_list %}
-          <div class="col-lg-3 col-md-6 mb-4">
-
-            <div class="card">
-
-              <div class="view overlay">
-                {% comment %} <img src="https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Vertical/12.jpg" class="card-img-top" {% endcomment %}
-                <img src="{{ item.image.url }}" class="card-img-top">
-                <a href="{{ item.get_absolute_url }}">
-                  <div class="mask rgba-white-slight"></div>
-                </a>
+  <div class="album py-5 bg-light">
+    <div class="container">
+      <div class="row">
+        {% for item in items %}
+        <div class="col-md-4">
+          <div class="card mb-4 shadow-sm">
+            <img class="bd-placeholder-img card-img-top" width="100%" height="225" src="{{item.local_image_src}}" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: Thumbnail"></img>
+            {% if item.top_seller %}
+              <img src="{% static 'images/icons/best_seller.png' %}" width="40%" style="position: absolute; top: 1%; left: 59%;"/>
+            {% endif %}
+            <div class="card-body">
+              <p class="card-text">{{ item.name }}</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="btn-group">
+                  <a type="button" href="{{ item.absolute_url }}" class="btn btn-sm btn-outline-secondary">View</a>
+                </div>
+                <small class="text-muted">{{ item.price_range }}</small>
               </div>
-
-              <div class="card-body text-center">
-                <a href="" class="grey-text">
-                  <h5>{{ item.get_category_display }}</h5>
-                </a>
-                <h5>
-                  <strong>
-                    <a href="{{ item.get_absolute_url }}" class="dark-grey-text">{{ item.title }}
-                      <span class="badge badge-pill {{ item.get_label_display }}-color">NEW</span>
-                    </a>
-                  </strong>
-                </h5>
-
-                <h4 class="font-weight-bold blue-text">
-                  <strong>$
-                  {% if item.discount_price %}
-                  {{ item.discount_price }}
-                  {% else %}
-                  {{ item.price }}
-                  {% endif %}
-                  </strong>
-                </h4>
-
-              </div>
-
             </div>
-
           </div>
-          {% endfor %}
         </div>
+        {% endfor %}
+      </div>
+    </div>
 
       </section>
       <!--Section: Products v.3-->

@@ -14,7 +14,7 @@ from django.contrib.staticfiles.storage import staticfiles_storage
 
 
 N_TOP_SELLER = 6
-cat_size = json.load(open(staticfiles_storage.path('cat_size.json')))
+CAT_SIZE = json.load(open(staticfiles_storage.path('cat_size.json')))
 
 
 def humanized_sort(lt):
@@ -28,23 +28,30 @@ def humanized_sort(lt):
     return lt
 
 
+BRANDS = {}
+for x, y in list(Product.objects.all().values_list('brand', 'sub_brand').distinct()):
+    BRANDS.setdefault(x, []).append(y)
+for key, values in BRANDS.items():
+    BRANDS[key] = humanized_sort(values)
+
+
 def index(request):
-    brands = Product.objects.all().values_list('brand', 'sub_brand').distinct()
-    d = {}
-    for x, y in list(brands):
-        d.setdefault(x, []).append(y)
-    for key, values in d.items():
-        d[key] = humanized_sort(values)
+    brand = request.GET.get('brand', 'All')
+    if brand == 'All':
+        items = Product.objects.all()
+    else:
+        items = Product.objects.filter(brand=brand)
+
     context = {
-        'brands': list(d.keys())
+        'brands': [{'name': b, 'selected': True if b == brand else False} for b in ['All'] + list(BRANDS.keys())],
+        'items': items,
     }
-    print(context)
     return render(request, 'search/index_new.html', context)
 
 
 def search(request):
     cats = [{'name': 'All', 'selected': True}]\
-         + [{'name': c, 'selected': False} for c in cat_size.keys()]
+         + [{'name': c, 'selected': False} for c in CAT_SIZE.keys()]
     items = []
 
     if request.method == 'POST':
@@ -56,7 +63,7 @@ def search(request):
             cat = request.POST['categories']
             products = Product.objects.filter(category=cat)
             cats = [{'name': 'All', 'selected': False}]\
-                 + [{'name': c, 'selected': False if c != cat else True} for c in cat_size.keys()]
+                 + [{'name': c, 'selected': False if c != cat else True} for c in CAT_SIZE.keys()]
         if request.POST['submit'] == 'top':
             items = list(products.filter(top_seller=True).order_by('top_seller_priority'))
             if len(items) > N_TOP_SELLER:
