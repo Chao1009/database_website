@@ -1,5 +1,5 @@
 {% extends "search/base.html" %}
-
+{% load static %}
 {% block content %}
   <style>
     table {
@@ -40,7 +40,7 @@
         <div class="col-md-4 mb-4">
           <p class="ex1"> {{object.name}}
              <br> {{object.sku}} </p>
-          <img src="{{object.local_image_src}}" class="img-fluid" alt="">
+          <img src="{% static object.local_image_src %}" class="img-fluid" alt="">
 
         </div>
         <!--Grid column-->

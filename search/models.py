@@ -79,7 +79,7 @@ class Product(models.Model):
         return False
 
     def local_image_src(self):
-        return r'static\images\products\{}.png'.format(self.sku)
+        return r'images\products\{}.png'.format(self.sku)
 
 
 # Product Item (individual item for each product)

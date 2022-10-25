@@ -12,9 +12,10 @@ from django.views.generic import ListView, DetailView, View
 from .models import *
 from django.contrib.staticfiles.storage import staticfiles_storage
 
-
+BRANDS = {}
 N_TOP_SELLER = 6
 CAT_SIZE = json.load(open(staticfiles_storage.path('cat_size.json')))
+BRANDS = {}
 
 
 def humanized_sort(lt):
@@ -28,25 +29,34 @@ def humanized_sort(lt):
     return lt
 
 
-BRANDS = {}
-for x, y in list(Product.objects.all().values_list('brand', 'sub_brand').distinct()):
-    BRANDS.setdefault(x, []).append(y)
-for key, values in BRANDS.items():
-    BRANDS[key] = humanized_sort(values)
+class HomeView(ListView):
+    if not BRANDS:
+        for x, y in list(Product.objects.all().values_list('brand', 'sub_brand').distinct()):
+            BRANDS.setdefault(x, []).append(y)
+        for key, values in BRANDS.items():
+            BRANDS[key] = humanized_sort(values)
+    model = Product
+    template_name = 'search/index_new.html'
+    paginate_by = 9
 
+    def get_queryset(self):
+        brand = self.request.GET.get('brand', 'All')
+        order = self.request.GET.get('orderby', 'sku')
+        if brand == 'All':
+            qs = Product.objects.all()
+        else:
+            qs = Product.objects.filter(brand=brand).order_by(order)
+        print(qs.count())
+        return qs
 
-def index(request):
-    brand = request.GET.get('brand', 'All')
-    if brand == 'All':
-        items = Product.objects.all()
-    else:
-        items = Product.objects.filter(brand=brand)
-
-    context = {
-        'brands': [{'name': b, 'selected': True if b == brand else False} for b in ['All'] + list(BRANDS.keys())],
-        'items': items,
-    }
-    return render(request, 'search/index_new.html', context)
+    def get_context_data(self, **kwargs):
+        context = super(HomeView, self).get_context_data(**kwargs)
+        brand = self.request.GET.get('brand', 'All')
+        context['brands'] = ['All'] + list(BRANDS.keys())
+        context['filters'] = {
+            'brand': brand
+        }
+        return context
 
 
 def search(request):
