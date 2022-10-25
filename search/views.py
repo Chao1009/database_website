@@ -1,3 +1,4 @@
+import re
 import requests
 import random
 import json
@@ -16,12 +17,38 @@ N_TOP_SELLER = 6
 cat_size = json.load(open(staticfiles_storage.path('cat_size.json')))
 
 
+def humanized_sort(lt):
+    def convert(text):
+        return float(text) if text.isdigit() else text
+
+    def alphanum(key):
+        return [convert(c) for c in re.split(r'([-+]?[0-9]*\.?[0-9]+)', key)]
+
+    lt.sort(key=alphanum)
+    return lt
+
+
 def index(request):
+    brands = Product.objects.all().values_list('brand', 'sub_brand').distinct()
+    d = {}
+    for x, y in list(brands):
+        d.setdefault(x, []).append(y)
+    for key, values in d.items():
+        d[key] = humanized_sort(values)
+    context = {
+        'brands': list(d.keys())
+    }
+    print(context)
+    return render(request, 'search/index_new.html', context)
+
+
+def search(request):
     cats = [{'name': 'All', 'selected': True}]\
          + [{'name': c, 'selected': False} for c in cat_size.keys()]
     items = []
 
     if request.method == 'POST':
+        print(request.POST)
         if 'categories' not in request.POST.keys() or request.POST['categories'] == 'All':
             products = Product.objects.all()
 

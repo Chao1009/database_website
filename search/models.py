@@ -53,6 +53,8 @@ class Product(models.Model):
         if size != 'all':
             items = items.filter(size=size)
         prices = [item.price for item in items]
+        if not prices:
+            return 'Out-of-stock'
         min_price, max_price = min(prices), max(prices)
         if min_price < max_price:
             # return '${:.2f} - ${:.2f}'.format(min_price, max_price)
