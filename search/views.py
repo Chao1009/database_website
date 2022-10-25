@@ -36,7 +36,7 @@ class HomeView(ListView):
         for key, values in BRANDS.items():
             BRANDS[key] = humanized_sort(values)
     model = Product
-    template_name = 'search/index_new.html'
+    template_name = 'search/home.html'
     paginate_by = 9
 
     def get_queryset(self):
