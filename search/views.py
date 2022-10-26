@@ -68,13 +68,14 @@ class HomeView(ListView):
         brands = []
         try:
             brands_data = np.array(Product.objects.all().values_list('brand', 'sub_brand').distinct())
-            allsubs = []
-            for b in np.unique(brands_data.T[0]):
-                subs = humanized_sort(list(brands_data[brands_data.T[0] == b].T[1]))
-                brands.append({'name': b, 'models': subs})
-                allsubs += subs
-            brands.append({'name': 'All', 'models': allsubs})
-            brands.sort(key=lambda x: len(x['models']), reverse=True)
+            if brands_data:
+                allsubs = []
+                for b in np.unique(brands_data.T[0]):
+                    subs = humanized_sort(list(brands_data[brands_data.T[0] == b].T[1]))
+                    brands.append({'name': b, 'models': subs})
+                    allsubs += subs
+                brands.append({'name': 'All', 'models': allsubs})
+                brands.sort(key=lambda x: len(x['models']), reverse=True)
         except OperationalError:
             print('Warning: no product data entries')
         context['brands'] = brands
