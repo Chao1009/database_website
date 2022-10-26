@@ -36,18 +36,29 @@ class HomeView(ListView):
 
     def get_queryset(self):
         brand = self.request.GET.get('brand', 'All')
-        order = self.request.GET.get('orderby', 'sku')
+        order = self.request.GET.get('order_by', 'best')
+
+        # brand filter
         if brand == 'All':
             qs = Product.objects.all()
         else:
-            qs = Product.objects.filter(brand=brand).order_by(order)
-        print(qs.count())
+            qs = Product.objects.filter(brand=brand)
+
+        # order by
+        if order == 'best':
+            qs = qs.order_by('-top_seller', 'top_seller_priority')
+        elif 'price' in order:
+            qs = qs.annotate(price=Min('productitem__price')).order_by(order)
+        else:
+            qs = qs.order_by(order)
+
         return qs
 
     def get_context_data(self, **kwargs):
         context = super(HomeView, self).get_context_data(**kwargs)
         # filters
         brand = self.request.GET.get('brand', 'All')
+        order = self.request.GET.get('order_by', 'best')
         context['current_brand'] = brand
         context['filters'] = {}
         if context['is_paginated']:
@@ -67,38 +78,8 @@ class HomeView(ListView):
         except OperationalError:
             print('Warning: no product data entries')
         context['brands'] = brands
-        print(brands)
+        # print(brands)
         return context
-
-
-def search(request):
-    cats = [{'name': 'All', 'selected': True}]\
-         + [{'name': c, 'selected': False} for c in CAT_SIZE.keys()]
-    items = []
-
-    if request.method == 'POST':
-        print(request.POST)
-        if 'categories' not in request.POST.keys() or request.POST['categories'] == 'All':
-            products = Product.objects.all()
-
-        else:
-            cat = request.POST['categories']
-            products = Product.objects.filter(category=cat)
-            cats = [{'name': 'All', 'selected': False}]\
-                 + [{'name': c, 'selected': False if c != cat else True} for c in CAT_SIZE.keys()]
-        if request.POST['submit'] == 'top':
-            items = list(products.filter(top_seller=True).order_by('top_seller_priority'))
-            if len(items) > N_TOP_SELLER:
-                items = items[:N_TOP_SELLER]
-        else:
-            search_str = request.POST['search']
-            items = products.filter(Q(sku__contains=search_str) | Q(name__contains=search_str))
-
-    context = {
-        'categories': cats,
-        'items': items
-    }
-    return render(request, 'search/index.html', context)
 
 
 class ProductDetailView(DetailView):
