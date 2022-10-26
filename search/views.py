@@ -63,12 +63,15 @@ class HomeView(ListView):
         context['filters'] = {}
         if context['is_paginated']:
             page = context['page_obj']
-            context['pages'] = [i for i in page.paginator.page_range if abs(i - page.number) < 5]
+            pages = [i for i in page.paginator.page_range if abs(i - page.number) < 5]
+            context['pages'] = pages
+            context['to_first_page'] = (pages[0] > 1)
+            context['to_last_page'] = (pages[-1] < page.paginator.num_pages)
         # brand list
         brands = []
         try:
             brands_data = np.array(Product.objects.all().values_list('brand', 'sub_brand').distinct())
-            if brands_data:
+            if len(brands_data):
                 allsubs = []
                 for b in np.unique(brands_data.T[0]):
                     subs = humanized_sort(list(brands_data[brands_data.T[0] == b].T[1]))
