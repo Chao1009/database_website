@@ -2,6 +2,7 @@ import re
 import requests
 import random
 import json
+import numpy as np
 from isodate import parse_duration
 
 from django.db.utils import OperationalError
@@ -13,10 +14,8 @@ from django.views.generic import ListView, DetailView, View
 from .models import *
 from django.contrib.staticfiles.storage import staticfiles_storage
 
-BRANDS = {}
 N_TOP_SELLER = 6
 CAT_SIZE = json.load(open(staticfiles_storage.path('cat_size.json')))
-
 
 
 def humanized_sort(lt):
@@ -49,19 +48,23 @@ class HomeView(ListView):
         context = super(HomeView, self).get_context_data(**kwargs)
         # filters
         brand = self.request.GET.get('brand', 'All')
-        context['filters'] = {
-            'brand': brand
-        }
+        context['current_brand'] = brand
+        context['filters'] = {}
         # brand list
-        brands = {}
+        brands = []
         try:
-            for x, y in list(Product.objects.all().values_list('brand', 'sub_brand').distinct()):
-                brands.setdefault(x, []).append(y)
-            for key, values in brands.items():
-                brands[key] = humanized_sort(values)
+            brands_data = np.array(Product.objects.all().values_list('brand', 'sub_brand').distinct())
+            allsubs = []
+            for b in np.unique(brands_data.T[0]):
+                subs = humanized_sort(list(brands_data[brands_data.T[0] == b].T[1]))
+                brands.append({'name': b, 'models': subs})
+                allsubs += subs
+            brands.append({'name': 'All', 'models': allsubs})
+            brands.sort(key=lambda x: len(x['models']), reverse=True)
         except OperationalError:
             print('Warning: no product data entries')
-        context['brands'] = ['All'] + list(brands.keys())
+        context['brands'] = brands
+        print(brands)
         return context
 
 
