@@ -16,7 +16,7 @@ from django.contrib.staticfiles.storage import staticfiles_storage
 BRANDS = {}
 N_TOP_SELLER = 6
 CAT_SIZE = json.load(open(staticfiles_storage.path('cat_size.json')))
-BRANDS = {}
+
 
 
 def humanized_sort(lt):
@@ -31,15 +31,6 @@ def humanized_sort(lt):
 
 
 class HomeView(ListView):
-    if not BRANDS:
-        try:
-            for x, y in list(Product.objects.all().values_list('brand', 'sub_brand').distinct()):
-                BRANDS.setdefault(x, []).append(y)
-            for key, values in BRANDS.items():
-                BRANDS[key] = humanized_sort(values)
-        except OperationalError:
-            print('Warning: no product data entries')
-
     model = Product
     template_name = 'search/home.html'
     paginate_by = 9
@@ -56,11 +47,21 @@ class HomeView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(HomeView, self).get_context_data(**kwargs)
+        # filters
         brand = self.request.GET.get('brand', 'All')
-        context['brands'] = ['All'] + list(BRANDS.keys())
         context['filters'] = {
             'brand': brand
         }
+        # brand list
+        brands = {}
+        try:
+            for x, y in list(Product.objects.all().values_list('brand', 'sub_brand').distinct()):
+                brands.setdefault(x, []).append(y)
+            for key, values in brands.items():
+                brands[key] = humanized_sort(values)
+        except OperationalError:
+            print('Warning: no product data entries')
+        context['brands'] = ['All'] + list(brands.keys())
         return context
 
 

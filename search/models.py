@@ -49,7 +49,7 @@ class Product(models.Model):
         return reverse('product_detail', args=[str(self.sku)])
 
     def price_range(self, size='all'):
-        items = ProductItem.objects.filter(product=self)
+        items = ProductItem.objects.filter(Q(product=self) & Q(sold=False))
         if size != 'all':
             items = items.filter(size=size)
         prices = [item.price for item in items]
@@ -65,7 +65,7 @@ class Product(models.Model):
         results = ProductItem.objects.filter(Q(product=self) & Q(sold=False))\
                   .values('size')\
                   .annotate(count=Count('size'), price=Min('price'))
-        print(results)
+        # print(results)
         return sorted(results, key=lambda x: extract_size_digits(x['size']))
 
     def total_count(self):
