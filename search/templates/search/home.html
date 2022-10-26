@@ -17,7 +17,6 @@
 
         <!-- Collapsible content -->
         <div class="collapse navbar-collapse" id="basicExampleNav">
-
           <!-- Links -->
           <ul class="navbar-nav mr-auto font-weight-bold">
             {% for brand in brands %}
@@ -58,7 +57,24 @@
           </div>
           <div class="row">
             <div class="column left" id="product-filter">
-              <h2> reserved for filters box </h2>
+              <div class="navbar-nav mr-auto mdb-color darken-3 text-white font-weight-bold" style="padding: 5px 5px 0px 10px;">
+                <div style="border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: gray;height:30px;">
+                  <div id="filter-header">Filters</div>
+                  {% if filters|length > 0 %}
+                  <a id="filter-clear-button" href="?" data-role="button" data-inline="true">x</a>
+                  {% endif %}
+                </div>
+              </div>
+              <div style="border-style: solid; padding: 10px 10px 10px 10px;">
+                <form>
+                  <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike">
+                  <label for="vehicle1"> I have a bike</label><br>
+                  <input type="checkbox" id="vehicle2" name="vehicle2" value="Car">
+                  <label for="vehicle2"> I have a car</label><br>
+                  <input type="checkbox" id="vehicle3" name="vehicle3" value="Boat">
+                  <label for="vehicle3"> I have a boat</label>
+                </form>
+              </div>
             </div>
             <div class="column right" id="product-grid">
               <div class="row">
