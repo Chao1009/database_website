@@ -50,6 +50,9 @@ class HomeView(ListView):
         brand = self.request.GET.get('brand', 'All')
         context['current_brand'] = brand
         context['filters'] = {}
+        if context['is_paginated']:
+            page = context['page_obj']
+            context['pages'] = [i for i in page.paginator.page_range if abs(i - page.number) < 5]
         # brand list
         brands = []
         try:
