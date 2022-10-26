@@ -3,7 +3,6 @@
 {% block content %}
   <main>
     <div class="container">
-
       <!--Navbar-->
       <nav class="navbar navbar-expand-lg navbar-dark mdb-color darken-2 mt-3 mb-5">
 
@@ -44,21 +43,21 @@
       </nav>
       <!--/.Navbar-->
 
-      <!--Section: Products v.3-->
+      <!--Center Section-->
       <section class="text-center mb-4">
-
         <div class="album py-5 bg-white">
           <div class="container">
+            <!--Product List-->
             <div class="row">
               {% for item in object_list %}
               <div class="col-md-4">
                 <div class="card mb-4 shadow-sm">
-                  <img class="bd-placeholder-img card-img-top" width="100%" height="225" src="{% static item.local_image_src %}" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: Thumbnail"></img>
+                  <img class="bd-placeholder-img card-img-top" width="100%" src="{% static item.local_image_src %}" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: Thumbnail"></img>
                   {% if item.top_seller %}
                     <img src="{% static 'images/icons/best_seller.png' %}" width="40%" style="position: absolute; top: 1%; left: 59%;"/>
                   {% endif %}
                   <div class="card-body">
-                    <p class="card-text">{{ item.name }}</p>
+                    <p class="card-text" style="white-space: nowrap; overflow:hidden; display:block;">{{ item.name }}</p>
                     <div class="d-flex justify-content-between align-items-center">
                       <div class="btn-group">
                         <a type="button" href="{{ item.absolute_url }}" class="btn btn-sm btn-outline-secondary">View</a>
@@ -70,13 +69,13 @@
               </div>
               {% endfor %}
             </div>
+            <!--/Product List-->
           </div>
-
+        </div>
       </section>
-      <!--Section: Products v.3-->
+      <!--/Center Section-->
 
       <!--Pagination-->
-
       {% if is_paginated %}
       <nav class="d-flex justify-content-center wow fadeIn">
         <ul class="pagination pg-blue">
