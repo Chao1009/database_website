@@ -4,6 +4,7 @@ import random
 import json
 from isodate import parse_duration
 
+from django.db.utils import OperationalError
 from django.conf import settings
 from django.shortcuts import render, redirect
 from django.db.models import Q
@@ -31,10 +32,14 @@ def humanized_sort(lt):
 
 class HomeView(ListView):
     if not BRANDS:
-        for x, y in list(Product.objects.all().values_list('brand', 'sub_brand').distinct()):
-            BRANDS.setdefault(x, []).append(y)
-        for key, values in BRANDS.items():
-            BRANDS[key] = humanized_sort(values)
+        try:
+            for x, y in list(Product.objects.all().values_list('brand', 'sub_brand').distinct()):
+                BRANDS.setdefault(x, []).append(y)
+            for key, values in BRANDS.items():
+                BRANDS[key] = humanized_sort(values)
+        except OperationalError:
+            print('Warning: no product data entries')
+
     model = Product
     template_name = 'search/home.html'
     paginate_by = 9
