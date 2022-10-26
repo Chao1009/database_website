@@ -1,13 +1,13 @@
 {% extends "search/base.html" %}
 {% load static %}
 {% block content %}
+
   <main>
     <div class="container">
       <!--Navbar-->
       <nav class="navbar navbar-expand-lg navbar-dark mdb-color darken-2 mt-3 mb-5">
 
         <!-- Navbar brand -->
-
 
         <!-- Collapse button -->
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#basicExampleNav"
@@ -45,12 +45,25 @@
 
       <!--Center Section-->
       <section class="text-center mb-4">
-        <div class="album py-5 bg-white">
-          <div class="container">
-            <!--Product List-->
-            <div class="row">
-              {% for item in object_list %}
-              <div class="col-md-4">
+        <div class="container">
+          <!--Product List-->
+          <div class="bar navbar-dark mdb-color lighten-5 mt-3 mb-5">
+            <h5 style="text-align: right; padding-right: 15px; padding-top: 3px; padding-bottom: 3px;">
+              {% if is_paginated %}
+                {{ paginator.count }} products
+              {% else %}
+                {{ object_list|length }} products
+              {% endif %}
+            </h5>
+          </div>
+          <div class="row">
+            <div class="column left" id="product-filter">
+              <h2> reserved for filters box </h2>
+            </div>
+            <div class="column right" id="product-grid">
+              <div class="row">
+                {% for item in object_list %}
+                  <div class="col-md-4">
                 <div class="card mb-4 shadow-sm">
                   <img class="bd-placeholder-img card-img-top" width="100%" src="{% static item.local_image_src %}" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: Thumbnail"></img>
                   {% if item.top_seller %}
@@ -67,10 +80,11 @@
                   </div>
                 </div>
               </div>
-              {% endfor %}
+                {% endfor %}
+              </div>
             </div>
-            <!--/Product List-->
           </div>
+          <!--/Product List-->
         </div>
       </section>
       <!--/Center Section-->
