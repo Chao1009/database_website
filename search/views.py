@@ -16,6 +16,12 @@ from django.contrib.staticfiles.storage import staticfiles_storage
 
 N_TOP_SELLER = 6
 CAT_SIZE = json.load(open(staticfiles_storage.path('cat_size.json')))
+ORDER_BY_DROPDOWN = [
+    {'value': 'best', 'name': 'Best Sellers'},
+    {'value': 'name', 'name': 'Name'},
+    {'value': 'price', 'name':  'Price: Low to High'},
+    {'value': '-price', 'name':  'Price: Low to High'},
+]
 
 
 def humanized_sort(lt):
@@ -33,33 +39,34 @@ class HomeView(ListView):
     model = Product
     template_name = 'search/home.html'
     paginate_by = 9
+    curr_brand = ''
+    curr_order = ''
 
     def get_queryset(self):
-        brand = self.request.GET.get('brand', 'All')
-        order = self.request.GET.get('order_by', 'best')
+        self.curr_brand = self.request.GET.get('brand', 'All')
+        self.curr_order = self.request.GET.get('order_by', 'best')
 
         # brand filter
-        if brand == 'All':
+        if self.curr_brand == 'All':
             qs = Product.objects.all()
         else:
-            qs = Product.objects.filter(brand=brand)
+            qs = Product.objects.filter(brand=self.curr_brand)
 
         # order by
-        if order == 'best':
+        if self.curr_order == 'best':
             qs = qs.order_by('-top_seller', 'top_seller_priority')
-        elif 'price' in order:
-            qs = qs.annotate(price=Min('productitem__price')).order_by(order)
+        elif 'price' in self.curr_order:
+            qs = qs.annotate(price=Min('productitem__price')).order_by(self.curr_order)
         else:
-            qs = qs.order_by(order)
+            qs = qs.order_by(self.curr_order)
 
         return qs
 
     def get_context_data(self, **kwargs):
         context = super(HomeView, self).get_context_data(**kwargs)
         # filters
-        brand = self.request.GET.get('brand', 'All')
-        order = self.request.GET.get('order_by', 'best')
-        context['current_brand'] = brand
+        context['current_brand'] = self.curr_brand
+        context['current_order'] = self.curr_order
         context['filters'] = {}
         if context['is_paginated']:
             page = context['page_obj']
@@ -82,6 +89,7 @@ class HomeView(ListView):
         except OperationalError:
             print('Warning: no product data entries')
         context['brands'] = brands
+        context['order_by_menu'] = ORDER_BY_DROPDOWN
         # print(brands)
         return context
 

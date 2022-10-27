@@ -83,10 +83,13 @@
                   <span style="font-size:larger;">Order By</span>
                 </a>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                  <a class="dropdown-item" href="?{% url_replace order_by='best' %}">Best Sellers</a>
-                  <a class="dropdown-item" href="?{% url_replace order_by='name' %}">Name</a>
-                  <a class="dropdown-item" href="?{% url_replace order_by='price' %}">Price: low to high</a>
-                  <a class="dropdown-item" href="?{% url_replace order_by='-price' %}">Price: high to low</a>
+                  {% for orderby in order_by_menu %}
+                  {% if orderby.value == current_order %}
+                    <a class="dropdown-item active" href="?{% url_replace order_by=orderby.value %}">{{ orderby.name }}</a>
+                  {% else %}
+                    <a class="dropdown-item" href="?{% url_replace order_by=orderby.value %}">{{ orderby.name }}</a>
+                  {% endif %}
+                  {% endfor %}
                 </div>
               </div>
               </div>
