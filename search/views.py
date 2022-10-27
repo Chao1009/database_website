@@ -3,6 +3,7 @@ import requests
 import random
 import json
 import numpy as np
+from natsort import natsorted
 from isodate import parse_duration
 
 from django.db.utils import OperationalError
@@ -24,24 +25,30 @@ ORDER_BY_DROPDOWN = [
 ]
 
 
-def humanized_sort(lt):
-    def convert(text):
-        return float(text) if text.isdigit() else text
-
-    def alphanum(key):
-        return [convert(c) for c in re.split(r'([-+]?[0-9]*\.?[0-9]+)', key)]
-
-    lt.sort(key=alphanum)
-    return lt
-
-
 class HomeView(ListView):
     model = Product
     template_name = 'search/home.html'
     paginate_by = 9
+
     curr_brand = ''
     curr_order = ''
     curr_filters = {}
+
+    sizes = []
+    sub_brands = []
+    brands = []
+    try:
+        brands_data = np.array(Product.objects.all().values_list('brand', 'sub_brand').distinct())
+        if len(brands_data):
+            allsubs = []
+            for b in np.unique(brands_data.T[0]):
+                subs = natsorted(list(brands_data[brands_data.T[0] == b].T[1]))
+                brands.append({'name': b, 'models': subs})
+                allsubs += subs
+            brands.append({'name': 'All', 'models': allsubs})
+            brands.sort(key=lambda x: len(x['models']), reverse=True)
+    except OperationalError:
+        print('Warning: no product data entries')
 
     def get_queryset(self):
         self.curr_brand = self.request.GET.get('brand', 'All')
@@ -61,11 +68,16 @@ class HomeView(ListView):
         else:
             qs = qs.order_by(self.curr_order)
 
+        self.sub_brands = natsorted(list(qs.values_list('sub_brand', flat=True).distinct()))
+        self.sizes = natsorted(list(qs.values_list('productitem__size', flat=True).distinct()))
         return qs
 
     def get_context_data(self, **kwargs):
         context = super(HomeView, self).get_context_data(**kwargs)
-        # filters
+        # brand list
+        context['brands'] = self.brands
+        context['models'] = self.sub_brands
+        context['sizes'] = self.sizes
         context['current_brand'] = self.curr_brand
         context['current_order'] = self.curr_order
         context['current_filters'] = self.curr_filters
@@ -75,21 +87,6 @@ class HomeView(ListView):
             context['pages'] = pages
             context['to_first_page'] = (pages[0] > 1)
             context['to_last_page'] = (pages[-1] < page.paginator.num_pages)
-        # brand list
-        brands = []
-        try:
-            brands_data = np.array(Product.objects.all().values_list('brand', 'sub_brand').distinct())
-            if len(brands_data):
-                allsubs = []
-                for b in np.unique(brands_data.T[0]):
-                    subs = humanized_sort(list(brands_data[brands_data.T[0] == b].T[1]))
-                    brands.append({'name': b, 'models': subs})
-                    allsubs += subs
-                brands.append({'name': 'All', 'models': allsubs})
-                brands.sort(key=lambda x: len(x['models']), reverse=True)
-        except OperationalError:
-            print('Warning: no product data entries')
-        context['brands'] = brands
         context['order_by_menu'] = ORDER_BY_DROPDOWN
         # print(brands)
         return context

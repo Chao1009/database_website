@@ -49,24 +49,44 @@
         <div class="container">
           <div class="row">
             <div class="column left" id="product-filter">
+<!--              <div class="border border-2 border-dark" style="border-width:13px">-->
               <div class="navbar-nav mr-auto mdb-color lighten-1 text-white font-weight-bold">
-                <div style="height:30px; padding: 2px 2px 10px 10px;">
+                <div style="height:30px; padding: 2px 2px 2px 10px;">
                   <div id="filter-header">Filters</div>
-                  {% if filters|length > 1 %}
+                  {% if filters|length > 0 %}
                   <a id="filter-clear-button" href="?" data-role="button" data-inline="true">x</a>
                   {% endif %}
                 </div>
               </div>
-              <div style="border-style: solid; padding: 10px 10px 10px 10px;">
+              <div style="padding: 2px 2px 2px 10px; height: auto; min-height: 30px;"></div>
                 <form>
-                  <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike">
-                  <label for="vehicle1"> Placeholder 1</label><br>
-                  <input type="checkbox" id="vehicle2" name="vehicle2" value="Car">
-                  <label for="vehicle2"> Placeholder 2</label><br>
-                  <input type="checkbox" id="vehicle3" name="vehicle3" value="Boat">
-                  <label for="vehicle3"> Placeholder 3</label>
+                  <div class="navbar-nav mr-auto mdb-color lighten-1 text-white font-weight-bold">
+                  <a style="color:white; padding: 2px 2px 2px 10px" data-toggle="collapse" href="#collapseModelFilter" role="button" aria-expanded="false" aria-controls="collapseExample">
+                    Models
+                  </a>
+                  </div>
+                  <div class="collapse" id="collapseModelFilter">
+                    {% for model in models %}
+                      <input type="checkbox" id="model-option" name="{{model}}" value="{{model}}">
+                      <label for="model-option"> {{model}} </label><br>
+                    {% endfor %}
+                  </div>
+                  {% if current_brand != 'All' %}
+                  <div class="navbar-nav mr-auto mdb-color lighten-1 text-white font-weight-bold">
+                  <a style="color:white; padding: 2px 2px 2px 10px" data-toggle="collapse" href="#collapseSizeFilter" role="button" aria-expanded="false" aria-controls="collapseExample">
+                    Sizes
+                  </a>
+                  </div>
+                  <div class="collapse" id="collapseSizeFilter">
+                    {% for size in sizes %}
+                      <input type="checkbox" id="size-option" name="{{size}}" value="{{size}}">
+                      <label for="size-option"> Size: {{size}} </label><br>
+                    {% endfor %}
+                  </div>
+                  {% endif %}
                 </form>
-              </div>
+
+<!--            </div>-->
             </div>
             <div class="column right" id="product-grid">
               <!--Product List-->
