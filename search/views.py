@@ -51,6 +51,7 @@ class HomeView(ListView):
         print('Warning: no product data entries')
 
     def get_queryset(self):
+        print(self.request.GET)
         self.curr_brand = self.request.GET.get('brand', 'All')
         self.curr_order = self.request.GET.get('order_by', 'best')
 

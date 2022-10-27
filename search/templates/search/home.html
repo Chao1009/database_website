@@ -74,60 +74,81 @@
                   {% endif %}
                 </div>
               </div>
-              <div style="padding: 2px 2px 2px 10px; height: auto; min-height: 30px;"></div>
-              <form>
-                <div class="navbar-nav mr-auto mdb-color lighten-1 text-white font-weight-bold">
-                  <a style="color:white; padding: 2px 2px 2px 10px" data-toggle="collapse" href="#collapseModelFilter" role="button" aria-expanded="false" aria-controls="collapseExample">
-                    Models
-                  </a>
+              <div style="padding: 2px 2px 2px 10px; height: auto; min-height: 30px;">
+<!--                Placeholder for selected filters-->
+              </div>
+              <!-- filters -->
+              <form method="get">
+
+                <!-- models -->
+                <div class="filter-section-select">
+                  <div class="navbar-nav mr-auto mdb-color lighten-1 text-white font-weight-bold">
+                    <a style="color:white; padding: 2px 2px 2px 10px"
+                       data-bs-toggle="collapse" href="#collapseModelFilter" role="button"
+                       aria-expanded="false" aria-controls="collapseExample">
+                      Models
+                    </a>
+                  </div>
+                  <div class="collapse" id="collapseModelFilter">
+                    {% for model in models %}
+                      <input type="checkbox" id="model-option" name="{{model}}" value="{{model}}">
+                      <label for="model-option">{{model}}</label>
+                      <br>
+                    {% endfor %}
+                  </div>
                 </div>
-                <div class="collapse" id="collapseModelFilter">
-                  {% for model in models %}
-                    <input type="checkbox" id="model-option" name="{{model}}" value="{{model}}">
-                    <label for="model-option"> {{model}} </label><br>
-                  {% endfor %}
-                </div>
+
+                <!-- sizes -->
                 {% if current_brand != 'All' %}
-                <div class="navbar-nav mr-auto mdb-color lighten-1 text-white font-weight-bold">
-                  <a style="color:white; padding: 2px 2px 2px 10px" data-toggle="collapse" href="#collapseSizeFilter" role="button" aria-expanded="false" aria-controls="collapseExample">
-                    Sizes
-                  </a>
-                </div>
-                <div class="collapse" id="collapseSizeFilter">
-                  {% for size in sizes %}
-                    <input type="checkbox" id="size-option" name="{{size}}" value="{{size}}">
-                    <label for="size-option"> Size: {{size}} </label><br>
-                  {% endfor %}
+                <div class="filter-section-select">
+                  <div class="navbar-nav mr-auto mdb-color lighten-1 text-white font-weight-bold">
+                    <a style="color:white; padding: 2px 2px 2px 10px"
+                       data-bs-toggle="collapse" href="#collapseSizeFilter" role="button"
+                       aria-expanded="false" aria-controls="collapseExample">
+                      Sizes
+                    </a>
+                  </div>
+                  <div class="collapse" id="collapseSizeFilter">
+                    {% for size in sizes %}
+                      <input type="checkbox" id="size-option" name="{{size}}" value="{{size}}">
+                      <label for="size-option"> Size: {{size}} </label>
+                      <br>
+                    {% endfor %}
+                  </div>
                 </div>
                 {% endif %}
 
-                <!--  price -->
-                <div class="navbar-nav mr-auto mdb-color lighten-1 text-white font-weight-bold">
-                  <a style="color:white; padding: 2px 2px 2px 10px" data-toggle="collapse" href="#collapsePriceFilter" role="button" aria-expanded="false" aria-controls="collapseExample">
-                    Prices
-                  </a>
-                </div>
-                <div class="collapse" id="collapsePriceFilter">
-                  <!--滑动条-->
-                  <input id="range" type="range" min ={{prices.min}} max = {{prices.max}} value={{prices.min}} oninput="change()"/>
-                  <a id="range2">0</a>
-                  <!--滑动条操作后产生的值-->
-                  <script type="text/javascript">
-                    function change() {
-                      var value = document.getElementById("range").value;
-                      document.getElementById("range2").innerHTML=value;
-                      console.log(value);
-                      }
-                  </script>
-
-                  <div class="demo">
-                    <input class="range-slider" type="hidden" value="10,89"/>
-                    <!-- <button id="g2">获取值</button> -->
+                <!-- price range -->
+                <div class="filter-section-slider">
+                  <div class="navbar-nav mr-auto mdb-color lighten-1 text-white font-weight-bold">
+                    <a style="color:white; padding: 2px 2px 2px 10px"
+                       data-bs-toggle="collapse" href="#collapsePriceFilter"
+                       role="button" aria-expanded="false" aria-controls="collapseExample">
+                      Prices
+                    </a>
                   </div>
-                    <!-- <button id="g2">获取值</button> -->
-                  <input type="number" name="min_price" value="{{prices.min}}" min={{prices.min}} max={{prices.max}} step=10 />
-                  -
-                  <input type="number" name="max_price" value="{{prices.max}}" min={{prices.min}} max={{prices.max}} step=10 />
+                  <div class="collapse" id="collapsePriceFilter">
+                    <!--滑动条-->
+                    <input id="range" type="range" min ={{prices.min}} max = {{prices.max}} value={{prices.min}} oninput="change()"/>
+                    <a id="range2">0</a>
+                    <!--滑动条操作后产生的值-->
+                    <script type="text/javascript">
+                      function change() {
+                        var value = document.getElementById("range").value;
+                        document.getElementById("range2").innerHTML=value;
+                        console.log(value);
+                        }
+                    </script>
+
+                    <div class="demo">
+                      <input class="range-slider" type="hidden" value="10,89"/>
+                      <!-- <button id="g2">获取值</button> -->
+                    </div>
+                      <!-- <button id="g2">获取值</button> -->
+                    <input type="number" name="min_price" value="{{prices.min}}" min={{prices.min}} max={{prices.max}} step=10 />
+                    -
+                    <input type="number" name="max_price" value="{{prices.max}}" min={{prices.min}} max={{prices.max}} step=10 />
+                  </div>
                 </div>
               </form>
 <!--            </div>-->
@@ -224,3 +245,4 @@
   </main>
 
 {% endblock content %}
+

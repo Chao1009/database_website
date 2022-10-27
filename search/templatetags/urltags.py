@@ -11,3 +11,10 @@ def url_replace(context, **kwargs):
             query.pop(k)
     query.update(kwargs)
     return query.urlencode()
+
+
+@register.simple_tag(takes_context=True)
+def url_update(context, **kwargs):
+    query = context['request'].GET.copy()
+    query.update(kwargs)
+    return query.urlencode()

@@ -8,6 +8,8 @@
 <script type="text/javascript" src="{% static 'search/js/bootstrap.min.js' %}"></script>
 <!-- MDB core JavaScript -->
 <script type="text/javascript" src="{% static 'search/js/mdb.min.js' %}"></script>
+<!-- js cookie -->
+<script type="text/javascript" src="{% static 'search/js/jquery.cookie.js' %}"></script>
 
 <!-- Range slider -->
 <script type="text/javascript" src="{% static 'search/js/jquery.range.js' %}"></script>
@@ -47,7 +49,11 @@ $(function(){
 });
 </script>
 
-
+<script type="text/javascript">
+    $('.list-group a').click(function() {
+        $(this).toggleClass('active')
+    });
+</script>
 <!-- Initializations -->
 <script type="text/javascript">
   // Animations initialization
