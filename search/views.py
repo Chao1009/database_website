@@ -41,6 +41,7 @@ class HomeView(ListView):
     paginate_by = 9
     curr_brand = ''
     curr_order = ''
+    curr_filters = {}
 
     def get_queryset(self):
         self.curr_brand = self.request.GET.get('brand', 'All')
@@ -67,7 +68,7 @@ class HomeView(ListView):
         # filters
         context['current_brand'] = self.curr_brand
         context['current_order'] = self.curr_order
-        context['filters'] = {}
+        context['current_filters'] = self.curr_filters
         if context['is_paginated']:
             page = context['page_obj']
             pages = [i for i in page.paginator.page_range if abs(i - page.number) < 5]
