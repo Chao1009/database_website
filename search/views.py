@@ -88,6 +88,20 @@ class HomeView(ListView):
             context['to_first_page'] = (pages[0] > 1)
             context['to_last_page'] = (pages[-1] < page.paginator.num_pages)
         context['order_by_menu'] = ORDER_BY_DROPDOWN
+        context['yabby'] = [
+            {'name': 'N_1', 'label': '3.5', 'count': 3, 'price': 300, },
+            {'name': 'N_2', 'label': '3.5', 'count': 3, 'price': 700, },
+            {'name': 'N_3', 'label': '3.5', 'count': 3, 'price': 350, },
+            {'name': 'N_4', 'label': '3.5', 'count': 3, 'price': 680, },
+            {'name': 'N_5', 'label': '3.5', 'count': 3, 'price': 450, },
+            {'name': 'N_6', 'label': '3.5', 'count': 3, 'price': 510, },
+        ]
+        context['prices'] = {
+            'max': '700',
+            'min': '280',
+
+
+        }
         # print(brands)
         return context
 

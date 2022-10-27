@@ -3,6 +3,24 @@
 {% load mathfilters %}
 {% load urltags %}
 {% block content %}
+<!--双向滑动条前置-->
+
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>jQuery双向滑动杆 设置数值百分比DEMO演示</title>
+
+<style type="text/css">
+.demo{width:350px; margin:100px auto 10px auto}
+#g1,#g2{margin-top:50px}
+</style>
+
+<link rel="stylesheet" href="{% static 'search/css/jquery.range.css' %}" />
+
+</head>
+
+<!--双向滑动条前置-->
+
 
   <main>
     <div class="container">
@@ -57,6 +75,12 @@
                   <a id="filter-clear-button" href="?" data-role="button" data-inline="true">x</a>
                   {% endif %}
                 </div>
+                数据测试-Y
+                {% for xx,yy in prices.items %}
+                <h2>name = {{xx}} </h2>
+                <h2></h2>
+                {% endfor %}
+                数据测试-Y
               </div>
               <div style="padding: 2px 2px 2px 10px; height: auto; min-height: 30px;"></div>
                 <form>
@@ -84,6 +108,39 @@
                     {% endfor %}
                   </div>
                   {% endif %}
+
+<!--                  价格-price-->
+                  <div class="navbar-nav mr-auto mdb-color lighten-1 text-white font-weight-bold">
+                  <a style="color:white; padding: 2px 2px 2px 10px" data-toggle="collapse" href="#collapseModelFilter" role="button" aria-expanded="false" aria-controls="collapseExample">
+                    Prices
+                  </a>
+                  </div>
+                  <div class="collapse" id="collapseModelFilter">
+<!--                    滑动条-->
+                      <input id="range" type="range" min ={{prices.min}} max = {{prices.max}} value={{prices.min}} oninput="change()"/>
+<!--                    滑动条操作后产生的值-->
+                        <script type="text/javascript">
+                           function change() {
+                            var value = document.getElementById("range").value;
+                            document.getElementById("range2").innerHTML=value;
+                            console.log(value);
+                            }
+                        </script>
+                    <a id="range2">请选择</a>
+
+
+                      <div class="demo">
+                        <input class="range-slider" type="hidden" value="10,89"/>
+                            <!-- <button id="g2">获取值</button> -->
+                      </div>
+
+                      <!-- <button id="g2">获取值</button> -->
+
+
+                      <input type="number" name="min_price" value="{{prices.min}}" min ={{prices.min}} max = {{prices.max}} step =10 >
+                      -
+                      <input type="number" name="max_price" value="{{prices.max}}" min ={{prices.min}} max = {{prices.max}} step =10 >
+                  </div>
                 </form>
 
 <!--            </div>-->
