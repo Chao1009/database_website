@@ -56,19 +56,19 @@
               <div class="accordion" id="filter-panel-accordion">
 
                 <!-- apply filters-->
-                <div class="accordion-item">
+                <div class="accordion-item mb-3">
                   <h2 class="accordion-header" id="applied-filter-panel">
                     <button class="accordion-button mdb-color darken-2 text-white" type="button"
                             style="$accordion-icon-color: white;"
                             data-bs-toggle="collapse" data-bs-target="#applied-filter-panel-box"
                             aria-expanded="true" aria-controls="applied-filter-panel-box">
-                      Current Filters
+                      Filters
                     </button>
                   </h2>
                   <div id="applied-filter-panel-box" class="accordion-collapse collapse show" aria-labelledby="applied-filter-panel">
-                    <div class="list-group">
-                      <a href="#" class="list-group-item list-group-item-action">Apply</a>
-                      <a href="#" class="list-group-item list-group-item-action">Remove All</a>
+                    <div class="list-group list-group-horizontal-lg">
+                      <button type="button" class="list-group-item list-group-item-primary list-group-item-action">Apply</button>
+                      <button type="button" class="list-group-item list-group-item-danger list-group-item-action">Clear</button>
                     </div>
                   </div>
                 </div>
