@@ -7,7 +7,6 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<link rel="stylesheet" href="{% static 'search/css/jquery.range.css' %}" />
 
 </head>
 
@@ -142,26 +141,25 @@
                     </h2>
 
                     <div id="price-filter-panel-box" class="accordion-collapse collapse" aria-labelledby="model-filter-panel">
-                      <!--滑动条-->
-                      <input id="range" type="range" min ={{prices.min}} max = {{prices.max}} value={{prices.min}} oninput="change()"/>
-                      <a id="range2">0</a>
-                      <!--滑动条操作后产生的值-->
-                      <script type="text/javascript">
-                        function change() {
-                          var value = document.getElementById("range").value;
-                          document.getElementById("range2").innerHTML=value;
-                          console.log(value);
-                          }
-                      </script>
+                      <div class="range_container">
+                          <div class="sliders_control">
+                             <input id="fromSlider" type="range" value="0" min="0" max="2500" step="10"/>
+                             <input id="toSlider" type="range" value="1500" min="0" max="2500" step="10"/>
+                          </div>
+                          <div class="form_control">
+                            <a>$</a>
+                            <div class="form_control_container">
+<!--                                <div class="form_control_container__time">Min</div>-->
+                                <input class="form_control_container__time__input" type="number" name="min_price" id="fromInput" value="0" min="0" max="2500" step="10"/>
+                              </div>
+                            <h2>-</h2>
 
-                      <div class="demo" style="width:350px; margin:100px auto 10px auto">
-                        <input class="range-slider" type="hidden" value="10,89"/>
-                        <!-- <button id="g2">获取值</button> -->
+                              <div class="form_control_container">
+<!--                                <div class="form_control_container__time">Max</div>-->
+                                <input class="form_control_container__time__input" type="number" name="max_price" id="toInput" value="1500" min="0" max="2500" step="10"/>
+                              </div>
+                          </div>
                       </div>
-                        <!-- <button id="g2">获取值</button> -->
-                      <input type="number" name="min_price" value="{{prices.min}}" min={{prices.min}} max={{prices.max}} step=10 />
-                      -
-                      <input type="number" name="max_price" value="{{prices.max}}" min={{prices.min}} max={{prices.max}} step=10 />
                     </div>
                   </div>
                   <!--/ price filters -->

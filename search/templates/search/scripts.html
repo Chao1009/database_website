@@ -12,43 +12,8 @@
 <!-- js cookie -->
 <script type="text/javascript" src="{% static 'search/js/jquery.cookie.js' %}"></script>
 
-<!-- Range slider -->
-<script type="text/javascript" src="{% static 'search/js/jquery.range.js' %}"></script>
-<script type="text/javascript">
-$(function(){
-	$('.single-slider').jRange({
-		from: 0,
-		to: 100,
-		step: 1,
-		scale: [0,25,50,75,100],
-		format: '%s',
-		width: 300,
-		showLabels: true,
-		showScale: true
-	});
-
-	$('.range-slider').jRange({
-		from: 0,
-		to: 100,
-		step: 1,
-		scale: [0,25,50,75,100],
-		format: '%s',
-		width: 300,
-		showLabels: true,
-		isRange : true
-	});
-
-	$("#g1").click(function(){
-		var aa = $(".single-slider").val();
-		alert(aa);
-	});
-
-	$("#g2").click(function(){
-		var aa = $(".range-slider").val();
-		alert(aa);
-	});
-});
-</script>
+<!-- slider -->
+<script type="text/javascript" src="{% static 'search/js/Slider.js' %}"></script>
 
 <script type="text/javascript">
     $('.list-group a').click(function() {
