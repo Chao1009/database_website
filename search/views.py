@@ -44,6 +44,17 @@ def sort_size(size_list):
     return sorted(size_list, key=size_key)
 
 
+def get_size_groups(query_set):
+    size_grp = {}
+    sizes = [s for s in query_set.values_list('productitem__size', flat=True) if s]
+    for size in np.unique(sizes):
+        if size[-1].isdigit():
+            size_grp['digit'] = size_grp.get('digit', []) + [size]
+        else:
+            size_grp[size[-1]] = size_grp.get(size[-1], []) + [size]
+    return [sort_size(values) for _, values in size_grp.items()]
+
+
 class HomeView(LoginRequiredMixin, ListView):
     login_url = 'accounts/login/'
     # redirect_field_name = 'redirect_to'
@@ -99,6 +110,10 @@ class HomeView(LoginRequiredMixin, ListView):
             return paginator, page, page.object_list, page.has_other_pages()
 
     def get_queryset(self):
+        search_str = self.request.GET.get('search', '')
+        if search_str:
+            return self.search_product(urllib.parse.unquote(search_str))
+
         # print(self.request.GET)
         self.curr_brand = self.request.GET.get('brand', 'All')
         self.curr_order = self.request.GET.get('order_by', 'best')
@@ -129,36 +144,31 @@ class HomeView(LoginRequiredMixin, ListView):
         qs = self.apply_filter(qs, 'sub_brand')
 
         # get size after brand and model filter
-        size_grp = {}
-        sizes = [s for s in qs.values_list('productitem__size', flat=True) if s]
-        for size in np.unique(sizes):
-            if size[-1].isdigit():
-                size_grp['digit'] = size_grp.get('digit', []) + [size]
-            else:
-                size_grp[size[-1]] = size_grp.get(size[-1], []) + [size]
-        self.size_groups = [sort_size(values) for _, values in size_grp.items()]
+        self.size_groups = get_size_groups(qs)
         # print(self.size_groups)
 
         # apply size filter
         qs = self.apply_filter(qs, 'size', 'productitem__size')
-
-        # # sizes
-        # flt_val = self.request.GET.get('size', '')
-        # self.curr_filters.update({'size': flt_val})
-        # flt_val = flt_val.split(',') if flt_val else []
-        # if len(flt_val):
-        #     sku_size = np.array(qs.values_list('sku', 'productitem__size').distinct())
-        #     print(sku_size.T[1])
-        #     print(flt_val)
-        #     sku_list = sku_size.T[0][sku_size.T[1] in flt_val]
-        #     print(sku_list)
 
         # order by
         if self.curr_order == 'best':
             qs = qs.order_by('-top_seller', 'top_seller_priority')
         else:
             qs = qs.order_by(self.curr_order)
+        return qs
 
+    def search_product(self, search_str):
+        # reset all filter states
+        self.curr_brand = 'All'
+        self.curr_order = 'best'
+        self.price_range = (0, 2500)
+        self.curr_filters = {}
+
+        qs = Product.objects.all()
+        self.sub_brands = natsorted(list(np.unique(qs.values_list('sub_brand', flat=True))))
+
+        qs = qs.filter(Q(sku__contains=search_str) | Q(name__contains=search_str)
+                       | Q(brand__contains=search_str) | Q(sub_brand__contains=search_str))
         return qs
 
     def apply_filter(self, qs, flt, keyval=None):
@@ -199,6 +209,7 @@ class HomeView(LoginRequiredMixin, ListView):
         context['order_by_menu'] = ORDER_BY_DROPDOWN
         # print(brands)
         return context
+
 
 
 class ProductDetailView(LoginRequiredMixin, DetailView):
