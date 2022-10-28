@@ -102,6 +102,9 @@ class HomeView(ListView):
         else:
             qs = Product.objects.filter(brand=self.curr_brand)
 
+        # annotation
+        qs = qs.annotate(price=Min('productitem__price'))
+
         # get all models and sizes before applying additional filters (only major brand filter)
         self.sub_brands = natsorted(list(np.unique(qs.values_list('sub_brand', flat=True))))
         size_grp = {}
@@ -130,8 +133,6 @@ class HomeView(ListView):
         # order by
         if self.curr_order == 'best':
             qs = qs.order_by('-top_seller', 'top_seller_priority')
-        elif 'price' in self.curr_order:
-            qs = qs.annotate(price=Min('productitem__price')).order_by(self.curr_order)
         else:
             qs = qs.order_by(self.curr_order)
 
