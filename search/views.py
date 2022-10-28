@@ -49,6 +49,7 @@ class HomeView(ListView):
     curr_brand = ''
     curr_order = ''
     curr_filters = {}
+    price_range = (0, 2500)
 
     size_groups = []
     sub_brands = []
@@ -129,6 +130,14 @@ class HomeView(ListView):
             self.curr_filters.update({flt: flt_val})
             if len(flt_val):
                 qs = qs.filter(**{'{}__in'.format(keyval): flt_val})
+        # price range
+        try:
+            self.price_range = (
+                float(self.request.GET.get('min_price', '0')), float(self.request.GET.get('max_price', '2500'))
+            )
+            qs = qs.filter(Q(price__gte=self.price_range[0]) & Q(price__lte=self.price_range[1]))
+        except ValueError:
+            self.price_range = (0, 2500)
 
         # order by
         if self.curr_order == 'best':
@@ -155,6 +164,8 @@ class HomeView(ListView):
         context['current_brand'] = self.curr_brand
         context['current_order'] = self.curr_order
         context['current_filters'] = self.curr_filters
+        context['min_price'] = self.price_range[0]
+        context['max_price'] = self.price_range[0]
         if context['is_paginated']:
             page = context['page_obj']
             pages = [i for i in page.paginator.page_range if abs(i - page.number) < 5]
