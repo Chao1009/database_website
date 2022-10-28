@@ -1,16 +1,31 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Log In</title>
+    <link href="{% static 'account/css/style.css' %}" rel="stylesheet">
 </head>
 <body>
-<!-- templates/registration/login.html -->
-<h2>Log In</h2>
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Log In</button>
-</form>
+  <main>
+    <div class="row">
+      <div class="colm-form">
+        <div class="form-container">
+          <form method="post">
+            <a><h2> Kickz Maryland </h2></a>
+            {% csrf_token %}
+            <input type="text" placeholder="Username" name="username">
+            <input type="password" placeholder="Password" name="password">
+            <button class="btn-login">Login</button>
+<!--                    <a href="#">Forgotten password?</a>-->
+<!--                    <button class="btn-new">Create new Account</button>-->
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
 </body>
 </html>
