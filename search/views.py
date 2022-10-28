@@ -79,14 +79,16 @@ class HomeView(ListView):
             if page == 'last':
                 page_number = paginator.num_pages
             else:
-                raise Http404(_("Page is not 'last', nor can it be converted to an int."))
+                raise Http404("Page is not 'last', nor can it be converted to an int.")
         try:
             page = paginator.page(page_number)
-            return (paginator, page, page.object_list, page.has_other_pages())
+            return paginator, page, page.object_list, page.has_other_pages()
         except InvalidPage as e:
-            page_number = paginator.num_pages #<-last page
+            # <-first page
+            page_number = 1
             page = paginator.page(page_number)
-            return (paginator, page, page.object_list, page.has_other_pages()) #<-return last page
+            # <-return first page
+            return paginator, page, page.object_list, page.has_other_pages()
 
     def get_queryset(self):
         print(self.request.GET)
