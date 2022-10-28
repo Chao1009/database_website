@@ -14,6 +14,7 @@
 
   <main>
     <div class="container">
+      <!-- navbar -->
       <nav class="navbar navbar-expand navbar-dark bg-dark mb-5">
         <div class="container-fluid">
           <a class="navbar-brand" href="?brand=All">All Brands</a>
@@ -45,7 +46,7 @@
           </div>
         </div>
       </nav>
-      <!--/.Navbar-->
+      <!--/ navbar -->
 
       <!--Center Section-->
       <section class="text-center mb-4">
@@ -54,110 +55,117 @@
             <div class="column left" id="product-filter">
               <!-- filters -->
               <div class="accordion" id="filter-panel-accordion">
+                <form method="get">
+                  <!-- filter control -->
+                  <div class="accordion-item mb-4 mt-5">
+                    <h2 class="accordion-header" id="applied-filter-panel">
+                      <button class="accordion-button mdb-color darken-2 text-white" type="button"
+                              style="$accordion-icon-color: white;"
+                              data-bs-toggle="collapse" data-bs-target="#applied-filter-panel-box"
+                              aria-expanded="true" aria-controls="applied-filter-panel-box">
+                        Filters
+                      </button>
+                    </h2>
 
-                <!-- apply filters-->
-                <div class="accordion-item mb-4 mt-5">
-                  <h2 class="accordion-header" id="applied-filter-panel">
-                    <button class="accordion-button mdb-color darken-2 text-white" type="button"
-                            style="$accordion-icon-color: white;"
-                            data-bs-toggle="collapse" data-bs-target="#applied-filter-panel-box"
-                            aria-expanded="true" aria-controls="applied-filter-panel-box">
-                      Filters
-                    </button>
-                  </h2>
-                  <div id="applied-filter-panel-box" class="accordion-collapse collapse show" aria-labelledby="applied-filter-panel">
-                    <div class="list-group list-group-horizontal-lg">
-                      <button type="button" class="list-group-item list-group-item-primary list-group-item-action">Apply</button>
-                      <button type="button" class="list-group-item list-group-item-danger list-group-item-action">Clear</button>
-                    </div>
+                      <div id="applied-filter-panel-box" class="accordion-collapse collapse show" aria-labelledby="applied-filter-panel">
+                        <div class="list-group list-group-horizontal-lg">
+                          <button type="submit" class="list-group-item list-group-item-primary list-group-item-action">
+                            Apply
+                          </button>
+                          <button type="submit" class="list-group-item list-group-item-danger list-group-item-action">
+                            Clear
+                          </button>
+                        </div>
+                      </div>
                   </div>
-                </div>
-                <!--/ apply filters-->
+                  <!--/ filter control -->
 
-                <!-- model filters -->
-                <div class="accordion-item">
-                  <h2 class="accordion-header" id="model-filter-panel">
-                    <button class="accordion-button collapsed mdb-color lighten-1 text-white" type="button"
-                            style="$accordion-icon-color: white;"
-                            data-bs-toggle="collapse" data-bs-target="#model-filter-panel-box"
-                            aria-expanded="true" aria-controls="model-filter-panel-box">
-                      Models
-                    </button>
-                  </h2>
-                  <div id="model-filter-panel-box" class="accordion-collapse collapse" aria-labelledby="model-filter-panel">
-                    <div class="list-group">
-                      {% for model in models %}
-                      <a class="list-group-item list-group-item-action">{{model}}</a>
-                      {% endfor %}
-                    </div>
-                  </div>
-                </div>
-                <!--/ model filters -->
-
-                <!-- size filters -->
-                <div class="accordion-item">
-                  <h2 class="accordion-header" id="size-filter-panel">
-                    <button class="accordion-button collapsed mdb-color lighten-1 text-white" type="button"
-                            style="$accordion-icon-color: white;"
-                            data-bs-toggle="collapse" data-bs-target="#size-filter-panel-box"
-                            aria-expanded="true" aria-controls="size-filter-panel-box">
-                      Sizes
-                    </button>
-                  </h2>
-                  <div id="size-filter-panel-box" class="accordion-collapse collapse" aria-labelledby="model-filter-panel">
-                    <div class="list-group">
-                      {% for size_group in size_groups %}
-                      <div class="list-group list-group-horizontal">
-                        {% for size in size_group %}
-                        {% if size %}
-                        <a class="list-group-item list-group-item-action flex-fill">{{size}}</a>
-                        {% else %}
-                        <a class="list-group-item list-group-item-action flex-fill disabled"> </a>
-                        {% endif %}
+                  <!-- model filters -->
+                  <div class="accordion-item">
+                    <input type="hidden" id="model_filter_value" name="sub_brand" value="0" />
+                    <h2 class="accordion-header" id="model-filter-panel">
+                      <button class="accordion-button collapsed mdb-color lighten-1 text-white" type="button"
+                              style="$accordion-icon-color: white;"
+                              data-bs-toggle="collapse" data-bs-target="#model-filter-panel-box"
+                              aria-expanded="true" aria-controls="model-filter-panel-box">
+                        Models
+                      </button>
+                    </h2>
+                    <div id="model-filter-panel-box" class="accordion-collapse collapse" aria-labelledby="model-filter-panel">
+                      <div class="list-group">
+                        {% for model in models %}
+                        <a class="list-group-item list-group-item-action">{{model}}</a>
                         {% endfor %}
                       </div>
-                      {% endfor %}
                     </div>
                   </div>
-                </div>
-                <!--/ size filters -->
+                  <!--/ model filters -->
 
-                <!-- price filters -->
-                <div class="accordion-item">
-                  <h2 class="accordion-header" id="price-filter-panel">
-                    <button class="accordion-button collapsed mdb-color lighten-1 text-white" type="button"
-                            style="$accordion-icon-color: white;"
-                            data-bs-toggle="collapse" data-bs-target="#price-filter-panel-box"
-                            aria-expanded="false" aria-controls="price-filter-panel-box">
-                      Price Range
-                    </button>
-                  </h2>
-
-                  <div id="price-filter-panel-box" class="accordion-collapse collapse" aria-labelledby="model-filter-panel">
-                    <!--滑动条-->
-                    <input id="range" type="range" min ={{prices.min}} max = {{prices.max}} value={{prices.min}} oninput="change()"/>
-                    <a id="range2">0</a>
-                    <!--滑动条操作后产生的值-->
-                    <script type="text/javascript">
-                      function change() {
-                        var value = document.getElementById("range").value;
-                        document.getElementById("range2").innerHTML=value;
-                        console.log(value);
-                        }
-                    </script>
-
-                    <div class="demo" style="width:350px; margin:100px auto 10px auto">
-                      <input class="range-slider" type="hidden" value="10,89"/>
-                      <!-- <button id="g2">获取值</button> -->
+                  <!-- size filters -->
+                  <div class="accordion-item">
+                    <input type="hidden" id="size_filter_value" name="size" value="0" />
+                    <h2 class="accordion-header" id="size-filter-panel">
+                      <button class="accordion-button collapsed mdb-color lighten-1 text-white" type="button"
+                              style="$accordion-icon-color: white;"
+                              data-bs-toggle="collapse" data-bs-target="#size-filter-panel-box"
+                              aria-expanded="true" aria-controls="size-filter-panel-box">
+                        Sizes
+                      </button>
+                    </h2>
+                    <div id="size-filter-panel-box" class="accordion-collapse collapse" aria-labelledby="model-filter-panel">
+                      <div class="list-group">
+                        {% for size_group in size_groups %}
+                        <div class="list-group list-group-horizontal">
+                          {% for size in size_group %}
+                          {% if size %}
+                          <a class="list-group-item list-group-item-action flex-fill">{{size}}</a>
+                          {% else %}
+                          <a class="list-group-item list-group-item-action flex-fill disabled"> </a>
+                          {% endif %}
+                          {% endfor %}
+                        </div>
+                        {% endfor %}
+                      </div>
                     </div>
-                      <!-- <button id="g2">获取值</button> -->
-                    <input type="number" name="min_price" value="{{prices.min}}" min={{prices.min}} max={{prices.max}} step=10 />
-                    -
-                    <input type="number" name="max_price" value="{{prices.max}}" min={{prices.min}} max={{prices.max}} step=10 />
                   </div>
-                </div>
-                <!--/ price filters -->
+                  <!--/ size filters -->
 
+                  <!-- price filters -->
+                  <div class="accordion-item">
+                    <h2 class="accordion-header" id="price-filter-panel">
+                      <button class="accordion-button collapsed mdb-color lighten-1 text-white" type="button"
+                              style="$accordion-icon-color: white;"
+                              data-bs-toggle="collapse" data-bs-target="#price-filter-panel-box"
+                              aria-expanded="false" aria-controls="price-filter-panel-box">
+                        Price Range
+                      </button>
+                    </h2>
+
+                    <div id="price-filter-panel-box" class="accordion-collapse collapse" aria-labelledby="model-filter-panel">
+                      <!--滑动条-->
+                      <input id="range" type="range" min ={{prices.min}} max = {{prices.max}} value={{prices.min}} oninput="change()"/>
+                      <a id="range2">0</a>
+                      <!--滑动条操作后产生的值-->
+                      <script type="text/javascript">
+                        function change() {
+                          var value = document.getElementById("range").value;
+                          document.getElementById("range2").innerHTML=value;
+                          console.log(value);
+                          }
+                      </script>
+
+                      <div class="demo" style="width:350px; margin:100px auto 10px auto">
+                        <input class="range-slider" type="hidden" value="10,89"/>
+                        <!-- <button id="g2">获取值</button> -->
+                      </div>
+                        <!-- <button id="g2">获取值</button> -->
+                      <input type="number" name="min_price" value="{{prices.min}}" min={{prices.min}} max={{prices.max}} step=10 />
+                      -
+                      <input type="number" name="max_price" value="{{prices.max}}" min={{prices.min}} max={{prices.max}} step=10 />
+                    </div>
+                  </div>
+                  <!--/ price filters -->
+                </form>
               </div>
               <!--/ filters -->
             </div>
