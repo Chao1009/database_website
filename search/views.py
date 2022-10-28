@@ -17,6 +17,8 @@ from django.http import Http404
 
 from .models import *
 from django.contrib.staticfiles.storage import staticfiles_storage
+from django.contrib.auth.mixins import LoginRequiredMixin
+
 
 N_TOP_SELLER = 6
 CAT_SIZE = json.load(open(staticfiles_storage.path('cat_size.json')))
@@ -42,7 +44,10 @@ def sort_size(size_list):
     return sorted(size_list, key=size_key)
 
 
-class HomeView(ListView):
+class HomeView(LoginRequiredMixin, ListView):
+    login_url = 'accounts/login/'
+    # redirect_field_name = 'redirect_to'
+
     model = Product
     template_name = 'search/home.html'
     paginate_by = 9
@@ -196,11 +201,15 @@ class HomeView(ListView):
         return context
 
 
-class ProductDetailView(DetailView):
+class ProductDetailView(LoginRequiredMixin, DetailView):
+    login_url = 'accounts/login/'
+    # redirect_field_name = 'redirect_to'
     model = Product
     template_name = 'search/product.html'
 
 
-class ProductListView(ListView):
+class ProductListView(LoginRequiredMixin, ListView):
+    login_url = 'accounts/login/'
+    # redirect_field_name = 'redirect_to'
     model = Product
     template_name = 'search/products.html'
