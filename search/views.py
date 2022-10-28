@@ -25,6 +25,20 @@ ORDER_BY_DROPDOWN = [
 ]
 
 
+# assuming size code is always number or number + 1 character
+def sort_size(size_list):
+    def size_key(size_str):
+        try:
+            if size_str[-1].isdigit():
+                return ' ', float(size_str)
+            else:
+                return size_str[-1], float(size_str[:-1])
+        except ValueError:
+            # a large number to be at the bottom
+            return '~', 999.
+    return sorted(size_list, key=size_key)
+
+
 class HomeView(ListView):
     model = Product
     template_name = 'search/home.html'
@@ -70,7 +84,9 @@ class HomeView(ListView):
             qs = qs.order_by(self.curr_order)
 
         self.sub_brands = natsorted(list(qs.values_list('sub_brand', flat=True).distinct()))
-        self.sizes = natsorted(list(qs.values_list('productitem__size', flat=True).distinct()))
+        self.sizes = sort_size(list(np.unique(qs.values_list('productitem__size', flat=True))))
+        print(list(qs.values_list('productitem__size', flat=True).distinct()))
+        print(self.sizes)
         return qs
 
     def get_context_data(self, **kwargs):
