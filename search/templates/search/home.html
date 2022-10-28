@@ -54,7 +54,25 @@
             <div class="column left" id="product-filter">
               <!-- filters -->
               <div class="accordion" id="filter-panel-accordion">
-                <form method="get">
+                <!-- add a callback on submit to collect all filter data -->
+                <form method="get" id="filter-form" onsubmit="CollectFilterValues()">
+                  <script type="text/javascript">
+                    function CollectFilterValues() {
+                        fform = document.getElementById('filter-form');
+                        console.log(fform);
+                        return false;
+                    }
+
+                    const form  = document.getElementById('filter-form');
+                    form.addEventListener('submit', (event) => {
+                        // stop form submission
+                        event.preventDefault();
+                    });
+                  </script>
+                  <!-- hidden input for other query paramters -->
+                  <input type="hidden" id="brand_filter_value" name="brand" value="{{current_brand}}" />
+                  <!-- hidden input for other query paramters -->
+
                   <!-- filter control -->
                   <div class="accordion-item mb-4 mt-5">
                     <h2 class="accordion-header" id="applied-filter-panel">
@@ -142,25 +160,23 @@
 
                     <div id="price-filter-panel-box" class="accordion-collapse collapse" aria-labelledby="model-filter-panel">
                       <div class="range_container">
-                          <div class="sliders_control">
-                             <input id="fromSlider" type="range" value="0" min="0" max="2500" step="10"/>
-                             <input id="toSlider" type="range" value="1500" min="0" max="2500" step="10"/>
+                        <div class="sliders_control">
+                          <input id="fromSlider" type="range" value="0" min="0" max="2500" step="10"/>
+                          <input id="toSlider" type="range" value="1500" min="0" max="2500" step="10"/>
+                        </div>
+                        <div class="form_control">
+                          <a>$</a>
+                          <div class="form_control_container">
+                            <input class="form_control_container__time__input" type="number" name="min_price" id="fromInput" value="0" min="0" max="2500" step="10"/>
                           </div>
-                          <div class="form_control">
-                            <a>$</a>
-                            <div class="form_control_container">
-<!--                                <div class="form_control_container__time">Min</div>-->
-                                <input class="form_control_container__time__input" type="number" name="min_price" id="fromInput" value="0" min="0" max="2500" step="10"/>
-                              </div>
-                            <h2>-</h2>
-
-                              <div class="form_control_container">
-<!--                                <div class="form_control_container__time">Max</div>-->
-                                <input class="form_control_container__time__input" type="number" name="max_price" id="toInput" value="1500" min="0" max="2500" step="10"/>
-                              </div>
+                          <h2>-</h2>
+                          <div class="form_control_container">
+                            <input class="form_control_container__time__input" type="number" name="max_price" id="toInput" value="1500" min="0" max="2500" step="10"/>
                           </div>
+                        </div>
                       </div>
                     </div>
+
                   </div>
                   <!--/ price filters -->
                 </form>

@@ -71,12 +71,12 @@ body,
   background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23ffffff'><path fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/></svg>") !important;
 }
 
-/*  Slider CSS*/
+/* slider css */
 .range_container {
   display: flex;
   flex-direction: column;
   width: 80%;
-  margin: 50px 30px 30px 30px; /*上右下左*/
+  margin: 50px 10px 30px 10px; /*上右下左*/
 }
 
 .sliders_control {
@@ -155,4 +155,4 @@ input[type="range"] {
   height: 0;
   z-index: 1;
 }
-/*  Slider CSS*/
+/* /slider css */
