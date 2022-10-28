@@ -58,16 +58,19 @@
                 <form method="get" id="filter-form" onsubmit="CollectFilterValues()">
                   <script type="text/javascript">
                     function CollectFilterValues() {
-                        fform = document.getElementById('filter-form');
-                        console.log(fform);
-                        return false;
+                        model_div = document.getElementById('model-filter-panel-box');
+                        model_input = document.getElementById('model_filter_value');
+                        model_list = Array.prototype.slice.call(model_div.getElementsByTagName('a'));
+                        model_filters = []
+                        model_list.forEach(element => {
+                            if (element.classList.contains('active')) {
+                                model_filters.push(element.innerHTML);
+                            }
+                        });
+                        model_input.value = encodeURI(model_filters);
+                        console.log(model_input.value);
+                        return true;
                     }
-
-                    const form  = document.getElementById('filter-form');
-                    form.addEventListener('submit', (event) => {
-                        // stop form submission
-                        event.preventDefault();
-                    });
                   </script>
                   <!-- hidden input for other query paramters -->
                   <input type="hidden" id="brand_filter_value" name="brand" value="{{current_brand}}" />
@@ -99,7 +102,7 @@
 
                   <!-- model filters -->
                   <div class="accordion-item">
-                    <input type="hidden" id="model_filter_value" name="sub_brand" value="0" />
+                    <input type="hidden" id="model_filter_value" name="sub_brand" value="" />
                     <h2 class="accordion-header" id="model-filter-panel">
                       <button class="accordion-button collapsed mdb-color lighten-1 text-white" type="button"
                               style="$accordion-icon-color: white;"
@@ -120,7 +123,7 @@
 
                   <!-- size filters -->
                   <div class="accordion-item">
-                    <input type="hidden" id="size_filter_value" name="size" value="0" />
+                    <input type="hidden" id="size_filter_value" name="size" value="" />
                     <h2 class="accordion-header" id="size-filter-panel">
                       <button class="accordion-button collapsed mdb-color lighten-1 text-white" type="button"
                               style="$accordion-icon-color: white;"
@@ -157,12 +160,12 @@
                         Price Range
                       </button>
                     </h2>
-
+                    <!-- price slider -->
                     <div id="price-filter-panel-box" class="accordion-collapse collapse" aria-labelledby="model-filter-panel">
                       <div class="range_container">
                         <div class="sliders_control">
                           <input id="fromSlider" type="range" value="0" min="0" max="2500" step="10"/>
-                          <input id="toSlider" type="range" value="1500" min="0" max="2500" step="10"/>
+                          <input id="toSlider" type="range" value="2500" min="0" max="2500" step="10"/>
                         </div>
                         <div class="form_control">
                           <a>$</a>
@@ -171,12 +174,12 @@
                           </div>
                           <h2>-</h2>
                           <div class="form_control_container">
-                            <input class="form_control_container__time__input" type="number" name="max_price" id="toInput" value="1500" min="0" max="2500" step="10"/>
+                            <input class="form_control_container__time__input" type="number" name="max_price" id="toInput" value="2500" min="0" max="2500" step="10"/>
                           </div>
                         </div>
                       </div>
                     </div>
-
+                    <!--/ price slider -->
                   </div>
                   <!--/ price filters -->
                 </form>

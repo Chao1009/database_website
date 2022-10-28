@@ -96,20 +96,13 @@ class HomeView(ListView):
         self.curr_brand = self.request.GET.get('brand', 'All')
         self.curr_order = self.request.GET.get('order_by', 'best')
 
-        # brand filter
+        # brands
         if self.curr_brand == 'All':
             qs = Product.objects.all()
         else:
             qs = Product.objects.filter(brand=self.curr_brand)
 
-        # order by
-        if self.curr_order == 'best':
-            qs = qs.order_by('-top_seller', 'top_seller_priority')
-        elif 'price' in self.curr_order:
-            qs = qs.annotate(price=Min('productitem__price')).order_by(self.curr_order)
-        else:
-            qs = qs.order_by(self.curr_order)
-
+        # get all models and sizes before applying additional filters (only major brand filter)
         self.sub_brands = natsorted(list(np.unique(qs.values_list('sub_brand', flat=True))))
         size_grp = {}
         sizes = [s for s in qs.values_list('productitem__size', flat=True) if s]
@@ -119,7 +112,29 @@ class HomeView(ListView):
             else:
                 size_grp[size[-1]] = size_grp.get(size[-1], []) + [size]
         self.size_groups = [sort_size(values) for _, values in size_grp.items()]
-        print(self.size_groups)
+        # print(self.size_groups)
+
+        # additional filters
+        self.curr_filters = {}
+        list_filters = [
+            ('sub_brand', 'sub_brand'),
+            ('size', 'productitem__size'),
+        ]
+        for flt, keyval in list_filters:
+            flt_val = self.request.GET.get(flt, '')
+            flt_val = flt_val.split(',') if flt_val else []
+            self.curr_filters.update({flt: flt_val})
+            if len(flt_val):
+                qs = qs.filter(**{'{}__in'.format(keyval): flt_val})
+
+        # order by
+        if self.curr_order == 'best':
+            qs = qs.order_by('-top_seller', 'top_seller_priority')
+        elif 'price' in self.curr_order:
+            qs = qs.annotate(price=Min('productitem__price')).order_by(self.curr_order)
+        else:
+            qs = qs.order_by(self.curr_order)
+
         return qs
 
     def get_context_data(self, **kwargs):
@@ -146,20 +161,6 @@ class HomeView(ListView):
             context['to_first_page'] = (pages[0] > 1)
             context['to_last_page'] = (pages[-1] < page.paginator.num_pages)
         context['order_by_menu'] = ORDER_BY_DROPDOWN
-
-        # test data
-        context['yabby'] = [
-            {'name': 'N_1', 'label': '3.5', 'count': 3, 'price': 300, },
-            {'name': 'N_2', 'label': '3.5', 'count': 3, 'price': 700, },
-            {'name': 'N_3', 'label': '3.5', 'count': 3, 'price': 350, },
-            {'name': 'N_4', 'label': '3.5', 'count': 3, 'price': 680, },
-            {'name': 'N_5', 'label': '3.5', 'count': 3, 'price': 450, },
-            {'name': 'N_6', 'label': '3.5', 'count': 3, 'price': 510, },
-        ]
-        context['prices'] = {
-            'max': '700',
-            'min': '280',
-        }
         # print(brands)
         return context
 
