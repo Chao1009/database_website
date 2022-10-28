@@ -14,42 +14,36 @@
 
   <main>
     <div class="container">
-      <!--Navbar-->
-      <nav class="navbar navbar-expand-lg navbar-dark mdb-color darken-2 mt-3 mb-5">
-
-        <!-- Navbar brand -->
-
-        <!-- Collapse button -->
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#basicExampleNav"
-          aria-controls="basicExampleNav" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <!-- Collapsible content -->
-        <div class="collapse navbar-collapse" id="basicExampleNav">
-          <!-- Links -->
-          <ul class="navbar-nav mr-auto font-weight-bold">
-            {% for brand in brands %}
-            {% if brand.name == current_brand %}
-            <li class="nav-item active">
-            {% else %}
-            <li class="nav-item">
-            {% endif %}
-              <a class="nav-link" href="?brand={{brand.name}}">{{brand.name}}</a>
-            </li>
-            {% endfor %}
-          </ul>
-          <!-- Links -->
-
-          <form class="form-inline">
-            <div class="md-form my-0">
-            <!--search by name, brand, model, sku-->
-              <!--<input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">-->
-            </div>
-          </form>
+      <nav class="navbar navbar-expand navbar-dark bg-dark mb-5">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="?brand=All">All Brands</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                  data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                  aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              {% for brand in brands %}
+              {% if brand.name == current_brand %}
+              <li class="nav-item active">
+              {% else %}
+              <li class="nav-item">
+              {% endif %}
+                <a class="nav-link" href="?brand={{brand.name}}">{{brand.name}}</a>
+              </li>
+              {% endfor %}
+            </ul>
+            <form class="d-flex">
+              <div class="input-group rounded">
+                <input type="search" class="form-control border-0" placeholder="Search" aria-label="Search" aria-describedby="search-addon"/>
+                <span class="input-group-text border-0 bg-white" id="search-addon">
+                  <button type="submit" class="border-0 bg-white"><i class="fa fa-search"></i></button>
+                </span>
+              </div>
+            </form>
+          </div>
         </div>
-        <!-- Collapsible content -->
-
       </nav>
       <!--/.Navbar-->
 

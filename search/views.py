@@ -62,7 +62,7 @@ class HomeView(ListView):
                 subs = natsorted(list(brands_data[brands_data.T[0] == b].T[1]))
                 brands.append({'name': b, 'models': subs})
                 allsubs += subs
-            brands.append({'name': 'All', 'models': allsubs})
+            # brands.append({'name': 'All', 'models': allsubs})
             brands.sort(key=lambda x: len(x['models']), reverse=True)
     except OperationalError:
         print('Warning: no product data entries')
