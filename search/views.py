@@ -54,8 +54,9 @@ class HomeView(ListView):
     sub_brands = []
     brands = []
     try:
-        brands_data = np.array(Product.objects.all().values_list('brand', 'sub_brand').distinct())
+        brands_data = Product.objects.all().values_list('brand', 'sub_brand').distinct()
         if len(brands_data):
+            brands_data = np.array(brands_data)
             allsubs = []
             for b in np.unique(brands_data.T[0]):
                 subs = natsorted(list(brands_data[brands_data.T[0] == b].T[1]))
@@ -111,7 +112,8 @@ class HomeView(ListView):
 
         self.sub_brands = natsorted(list(np.unique(qs.values_list('sub_brand', flat=True))))
         size_grp = {}
-        for size in np.unique(qs.values_list('productitem__size', flat=True)):
+        sizes = [s for s in qs.values_list('productitem__size', flat=True) if s]
+        for size in np.unique(sizes):
             if size[-1].isdigit():
                 size_grp['digit'] = size_grp.get('digit', []) + [size]
             else:
