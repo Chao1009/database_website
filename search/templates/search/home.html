@@ -65,69 +65,78 @@
         <div class="container">
           <div class="row">
             <div class="column left" id="product-filter">
-<!--              <div class="border border-2 border-dark" style="border-width:13px">-->
-              <div class="navbar-nav mr-auto mdb-color lighten-1 text-white font-weight-bold">
-                <div style="height:30px; padding: 2px 2px 2px 10px;">
-                  <div id="filter-header">Filters</div>
-                  {% if filters|length > 0 %}
-                  <a id="filter-clear-button" href="?" data-role="button" data-inline="true">x</a>
-                  {% endif %}
-                </div>
-              </div>
-              <div style="padding: 2px 2px 2px 10px; height: auto; min-height: 30px;">
-<!--                Placeholder for selected filters-->
-              </div>
               <!-- filters -->
-              <form method="get">
+              <div class="accordion" id="filter-panel-accordion">
 
-                <!-- models -->
-                <div class="filter-section-select">
-                  <div class="navbar-nav mr-auto mdb-color lighten-1 text-white font-weight-bold">
-                    <a style="color:white; padding: 2px 2px 2px 10px"
-                       data-bs-toggle="collapse" href="#collapseModelFilter" role="button"
-                       aria-expanded="false" aria-controls="collapseExample">
+                <!-- applied filters-->
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="applied-filter-panel">
+                    <button class="accordion-button mdb-color darken-2 text-white" type="button"
+                            style="$accordion-icon-color: white;"
+                            data-bs-toggle="collapse" data-bs-target="#applied-filter-panel-box"
+                            aria-expanded="true" aria-controls="applied-filter-panel-box">
+                      Current Filters
+                    </button>
+                  </h2>
+                  <div id="applied-filter-panel-box" class="accordion-collapse collapse show" aria-labelledby="applied-filter-panel">
+                    <div class="list-group">
+                      <a href="#" class="list-group-item list-group-item-action">Placeholder#1</a>
+                      <a href="#" class="list-group-item list-group-item-action">Placeholder#2</a>
+                    </div>
+                  </div>
+                </div>
+                <!--/ applied filters-->
+
+                <!-- model filters -->
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="model-filter-panel">
+                    <button class="accordion-button collapsed mdb-color lighten-1 text-white" type="button"
+                            style="$accordion-icon-color: white;"
+                            data-bs-toggle="collapse" data-bs-target="#model-filter-panel-box"
+                            aria-expanded="true" aria-controls="model-filter-panel-box">
                       Models
-                    </a>
-                  </div>
-                  <div class="collapse" id="collapseModelFilter">
-                    {% for model in models %}
-                      <input type="checkbox" id="model-option" name="{{model}}" value="{{model}}">
-                      <label for="model-option">{{model}}</label>
-                      <br>
-                    {% endfor %}
+                    </button>
+                  </h2>
+                  <div id="model-filter-panel-box" class="accordion-collapse collapse" aria-labelledby="model-filter-panel">
+                    <div class="list-group">
+                      <a href="#" class="list-group-item list-group-item-action">Placeholder#1</a>
+                      <a href="#" class="list-group-item list-group-item-action">Placeholder#2</a>
+                    </div>
                   </div>
                 </div>
+                <!--/ model filters -->
 
-                <!-- sizes -->
-                {% if current_brand != 'All' %}
-                <div class="filter-section-select">
-                  <div class="navbar-nav mr-auto mdb-color lighten-1 text-white font-weight-bold">
-                    <a style="color:white; padding: 2px 2px 2px 10px"
-                       data-bs-toggle="collapse" href="#collapseSizeFilter" role="button"
-                       aria-expanded="false" aria-controls="collapseExample">
+                <!-- size filters -->
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="size-filter-panel">
+                    <button class="accordion-button collapsed mdb-color lighten-1 text-white" type="button"
+                            style="$accordion-icon-color: white;"
+                            data-bs-toggle="collapse" data-bs-target="#size-filter-panel-box"
+                            aria-expanded="true" aria-controls="size-filter-panel-box">
                       Sizes
-                    </a>
-                  </div>
-                  <div class="collapse" id="collapseSizeFilter">
-                    {% for size in sizes %}
-                      <input type="checkbox" id="size-option" name="{{size}}" value="{{size}}">
-                      <label for="size-option"> Size: {{size}} </label>
-                      <br>
-                    {% endfor %}
+                    </button>
+                  </h2>
+                  <div id="size-filter-panel-box" class="accordion-collapse collapse" aria-labelledby="model-filter-panel">
+                    <div class="list-group">
+                      <a href="#" class="list-group-item list-group-item-action">Placeholder#1</a>
+                      <a href="#" class="list-group-item list-group-item-action">Placeholder#2</a>
+                    </div>
                   </div>
                 </div>
-                {% endif %}
+                <!--/ size filters -->
 
-                <!-- price range -->
-                <div class="filter-section-slider">
-                  <div class="navbar-nav mr-auto mdb-color lighten-1 text-white font-weight-bold">
-                    <a style="color:white; padding: 2px 2px 2px 10px"
-                       data-bs-toggle="collapse" href="#collapsePriceFilter"
-                       role="button" aria-expanded="false" aria-controls="collapseExample">
-                      Prices
-                    </a>
-                  </div>
-                  <div class="collapse" id="collapsePriceFilter">
+                <!-- price filters -->
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="price-filter-panel">
+                    <button class="accordion-button collapsed mdb-color lighten-1 text-white" type="button"
+                            style="$accordion-icon-color: white;"
+                            data-bs-toggle="collapse" data-bs-target="#price-filter-panel-box"
+                            aria-expanded="true" aria-controls="price-filter-panel-box">
+                      Price Range
+                    </button>
+                  </h2>
+
+                  <div id="price-filter-panel-box" class="accordion-collapse collapse" aria-labelledby="model-filter-panel">
                     <!--滑动条-->
                     <input id="range" type="range" min ={{prices.min}} max = {{prices.max}} value={{prices.min}} oninput="change()"/>
                     <a id="range2">0</a>
@@ -150,8 +159,10 @@
                     <input type="number" name="max_price" value="{{prices.max}}" min={{prices.min}} max={{prices.max}} step=10 />
                   </div>
                 </div>
-              </form>
-<!--            </div>-->
+                <!--/ price filters -->
+
+              </div>
+              <!--/ filters -->
             </div>
             <div class="column right" id="product-grid">
               <!--Product List-->
@@ -181,23 +192,25 @@
               </div>
               <div class="row">
                 {% for item in object_list %}
-                  <div class="col-md-4">
-                <div class="card mb-4 shadow-sm">
-                  <img class="bd-placeholder-img card-img-top" width="100%" src="{% static item.local_image_src %}" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: Thumbnail"></img>
-                  {% if item.top_seller %}
+                <div class="col-md-4">
+                  <div class="card mb-4 shadow-sm">
+                    <img class="bd-placeholder-img card-img-top" width="100%"
+                         src="{% static item.local_image_src %}"
+                         role="img" aria-label="Placeholder: Thumbnail"/>
+                    {% if item.top_seller %}
                     <img src="{% static 'images/icons/best_seller.png' %}" width="40%" style="position: absolute; top: 1%; left: 59%;"/>
-                  {% endif %}
-                  <div class="card-body">
-                    <p class="card-text" style="white-space: nowrap; overflow:hidden; display:block;">{{ item.name }}</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                      <div class="btn-group">
-                        <a type="button" href="{{ item.absolute_url }}" class="btn btn-sm btn-outline-secondary">VIEW</a>
+                    {% endif %}
+                    <div class="card-body">
+                      <p class="card-text" style="white-space: nowrap; overflow:hidden; display:block;">{{ item.name }}</p>
+                      <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                          <a type="button" href="{{ item.absolute_url }}" class="btn btn-sm btn-outline-secondary">VIEW</a>
+                        </div>
+                        <small class="text-muted">{{ item.price_range }}</small>
                       </div>
-                      <small class="text-muted">{{ item.price_range }}</small>
                     </div>
                   </div>
                 </div>
-              </div>
                 {% endfor %}
               </div>
               {% if is_paginated %}
