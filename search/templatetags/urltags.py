@@ -1,4 +1,5 @@
 from django import template
+import urllib
 
 register = template.Library()
 
@@ -18,3 +19,9 @@ def url_update(context, **kwargs):
     query = context['request'].GET.copy()
     query.update(kwargs)
     return query.urlencode()
+
+
+@register.filter(name='inlist')
+def inlist(value, encodedlist):
+    lst = [urllib.parse.unquote(x) for x in encodedlist.split(',')]
+    return value in lst

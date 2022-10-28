@@ -54,9 +54,10 @@
               <!-- filters -->
               <div class="accordion" id="filter-panel-accordion">
                 <!-- add a callback on submit to collect all filter data -->
-                <form method="get" id="filter-form" onsubmit="CollectFilterValues()">
+                <form method="get" id="filter-form" onsubmit="return CollectFilterValues()">
                   <script type="text/javascript">
                     function CollectFilterValues() {
+                        // models
                         model_div = document.getElementById('model-filter-panel-box');
                         model_input = document.getElementById('model_filter_value');
                         model_list = Array.prototype.slice.call(model_div.getElementsByTagName('a'));
@@ -67,7 +68,20 @@
                             }
                         });
                         model_input.value = encodeURI(model_filters);
-                        console.log(model_input.value);
+                        // console.log(model_input.value);
+
+                        // sizes
+                        size_div = document.getElementById('size-filter-panel-box');
+                        size_input = document.getElementById('size_filter_value');
+                        size_list = Array.prototype.slice.call(size_div.getElementsByTagName('a'));
+                        size_filters = []
+                        size_list.forEach(element => {
+                            if (element.classList.contains('active')) {
+                                size_filters.push(element.innerHTML);
+                            }
+                        });
+                        size_input.value = encodeURI(size_filters);
+
                         return true;
                     }
                   </script>
@@ -91,7 +105,8 @@
                           <button type="submit" class="list-group-item list-group-item-primary list-group-item-action">
                             Apply
                           </button>
-                          <button type="submit" class="list-group-item list-group-item-danger list-group-item-action">
+                          <button class="list-group-item list-group-item-danger list-group-item-action"
+                                  onClick="window.location.href='{% url 'home' %}';">>
                             Clear
                           </button>
                         </div>
@@ -99,60 +114,10 @@
                   </div>
                   <!--/ filter control -->
 
-                  <!-- model filters -->
-                  <div class="accordion-item">
-                    <input type="hidden" id="model_filter_value" name="sub_brand" value="" />
-                    <h2 class="accordion-header" id="model-filter-panel">
-                      <button class="accordion-button collapsed mdb-color lighten-1 text-white" type="button"
-                              style="$accordion-icon-color: white;"
-                              data-bs-toggle="collapse" data-bs-target="#model-filter-panel-box"
-                              aria-expanded="true" aria-controls="model-filter-panel-box">
-                        Models
-                      </button>
-                    </h2>
-                    <div id="model-filter-panel-box" class="accordion-collapse collapse" aria-labelledby="model-filter-panel">
-                      <div class="list-group">
-                        {% for model in models %}
-                        <a class="list-group-item list-group-item-action">{{model}}</a>
-                        {% endfor %}
-                      </div>
-                    </div>
-                  </div>
-                  <!--/ model filters -->
-
-                  <!-- size filters -->
-                  <div class="accordion-item">
-                    <input type="hidden" id="size_filter_value" name="size" value="" />
-                    <h2 class="accordion-header" id="size-filter-panel">
-                      <button class="accordion-button collapsed mdb-color lighten-1 text-white" type="button"
-                              style="$accordion-icon-color: white;"
-                              data-bs-toggle="collapse" data-bs-target="#size-filter-panel-box"
-                              aria-expanded="true" aria-controls="size-filter-panel-box">
-                        Sizes
-                      </button>
-                    </h2>
-                    <div id="size-filter-panel-box" class="accordion-collapse collapse" aria-labelledby="model-filter-panel">
-                      <div class="list-group">
-                        {% for size_group in size_groups %}
-                        <div class="list-group list-group-horizontal">
-                          {% for size in size_group %}
-                          {% if size %}
-                          <a class="list-group-item list-group-item-action flex-fill">{{size}}</a>
-                          {% else %}
-                          <a class="list-group-item list-group-item-action flex-fill disabled"> </a>
-                          {% endif %}
-                          {% endfor %}
-                        </div>
-                        {% endfor %}
-                      </div>
-                    </div>
-                  </div>
-                  <!--/ size filters -->
-
                   <!-- price filters -->
                   <div class="accordion-item">
                     <h2 class="accordion-header" id="price-filter-panel">
-                      <button class="accordion-button collapsed mdb-color lighten-1 text-white" type="button"
+                      <button class="accordion-button mdb-color lighten-1 text-white" type="button"
                               style="$accordion-icon-color: white;"
                               data-bs-toggle="collapse" data-bs-target="#price-filter-panel-box"
                               aria-expanded="false" aria-controls="price-filter-panel-box">
@@ -160,14 +125,13 @@
                       </button>
                     </h2>
                     <!-- price slider -->
-                    <div id="price-filter-panel-box" class="accordion-collapse collapse" aria-labelledby="model-filter-panel">
+                    <div id="price-filter-panel-box" class="accordion-collapse collapse show" aria-labelledby="model-filter-panel">
                       <div class="range_container">
                         <div class="sliders_control">
                           <input id="fromSlider" type="range" value="{{min_price}}" min="0" max="2500" step="10"/>
                           <input id="toSlider" type="range" value="{{max_price}}" min="0" max="2500" step="10"/>
                         </div>
                         <div class="form_control">
-                          <a>$</a>
                           <div class="form_control_container">
                             <input class="form_control_container__time__input" type="number" name="min_price" id="fromInput" value="{{min_price}}" min="0" max="2500" step="10"/>
                           </div>
@@ -183,6 +147,69 @@
                     <script type="text/javascript" src="{% static 'search/js/double_slider.js' %}"></script>
                   </div>
                   <!--/ price filters -->
+
+                  <!-- model filters -->
+                  <div class="accordion-item">
+                    <input type="hidden" id="model_filter_value" name="sub_brand" value="" />
+                    <h2 class="accordion-header" id="model-filter-panel">
+                      <button class="accordion-button mdb-color lighten-1 text-white {% if not current_filters.sub_brand %} collapsed {% endif %}"
+                              type="button" style="$accordion-icon-color: white;"
+                              data-bs-toggle="collapse" data-bs-target="#model-filter-panel-box"
+                              aria-expanded="true" aria-controls="model-filter-panel-box">
+                        Models
+                      </button>
+                    </h2>
+                    <div id="model-filter-panel-box"
+                         class="accordion-collapse collapse {% if current_filters.sub_brand %} show {% endif %}"
+                         aria-labelledby="model-filter-panel">
+                      <div class="list-group">
+                        {% for model in models %}
+                          {% if model|inlist:current_filters.sub_brand %}
+                          <a class="list-group-item list-group-item-action active">{{model}}</a>
+                          {% else %}
+                          <a class="list-group-item list-group-item-action">{{model}}</a>
+                          {% endif %}
+                        {% endfor %}
+                      </div>
+                    </div>
+                  </div>
+                  <!--/ model filters -->
+
+                  <!-- size filters -->
+                  <div class="accordion-item">
+                    <input type="hidden" id="size_filter_value" name="size" value="" />
+                    <h2 class="accordion-header" id="size-filter-panel">
+                      <button class="accordion-button mdb-color lighten-1 text-white {% if not current_filters.size %} collapsed {% endif %}"
+                              type="button"  style="$accordion-icon-color: white;"
+                              data-bs-toggle="collapse" data-bs-target="#size-filter-panel-box"
+                              aria-expanded="true" aria-controls="size-filter-panel-box">
+                        Sizes
+                      </button>
+                    </h2>
+                    <div id="size-filter-panel-box"
+                         class="accordion-collapse collapse {% if current_filters.size %} show {% endif %}"
+                         aria-labelledby="model-filter-panel">
+                      <div class="list-group">
+                        {% for size_group in size_groups %}
+                        <div class="list-group list-group-horizontal">
+                          {% for size in size_group %}
+                            {% if size %}
+                              {% if size|inlist:current_filters.size %}
+                              <a class="list-group-item list-group-item-action flex-fill active">{{size}}</a>
+                              {% else %}
+                              <a class="list-group-item list-group-item-action flex-fill">{{size}}</a>
+                              {% endif %}
+                            {% else %}
+                            <a class="list-group-item list-group-item-action flex-fill disabled"> </a>
+                            {% endif %}
+                          {% endfor %}
+                        </div>
+                        {% endfor %}
+                      </div>
+                    </div>
+                  </div>
+                  <!--/ size filters -->
+
                 </form>
               </div>
               <!--/ filters -->

@@ -4,6 +4,7 @@ import random
 import json
 import numpy as np
 from natsort import natsorted
+import urllib
 from isodate import parse_duration
 
 from django.db.utils import OperationalError
@@ -93,7 +94,7 @@ class HomeView(ListView):
             return paginator, page, page.object_list, page.has_other_pages()
 
     def get_queryset(self):
-        print(self.request.GET)
+        # print(self.request.GET)
         self.curr_brand = self.request.GET.get('brand', 'All')
         self.curr_order = self.request.GET.get('order_by', 'best')
 
@@ -102,12 +103,27 @@ class HomeView(ListView):
             qs = Product.objects.all()
         else:
             qs = Product.objects.filter(brand=self.curr_brand)
+        self.curr_filters = {}
 
         # annotation
         qs = qs.annotate(price=Min('productitem__price'))
+        # price range
+        try:
+            self.price_range = (
+                float(self.request.GET.get('min_price', '0')), float(self.request.GET.get('max_price', '2500'))
+            )
+            # print(self.price_range)
+            qs = qs.filter(Q(price__gte=self.price_range[0]) & Q(price__lte=self.price_range[1]))
+        except ValueError:
+            self.price_range = (0, 2500)
 
         # get all models and sizes before applying additional filters (only major brand filter)
         self.sub_brands = natsorted(list(np.unique(qs.values_list('sub_brand', flat=True))))
+
+        # apply model filter
+        qs = self.apply_filter(qs, 'sub_brand')
+
+        # get size after brand and model filter
         size_grp = {}
         sizes = [s for s in qs.values_list('productitem__size', flat=True) if s]
         for size in np.unique(sizes):
@@ -118,26 +134,19 @@ class HomeView(ListView):
         self.size_groups = [sort_size(values) for _, values in size_grp.items()]
         # print(self.size_groups)
 
-        # additional filters
-        self.curr_filters = {}
-        list_filters = [
-            ('sub_brand', 'sub_brand'),
-            ('size', 'productitem__size'),
-        ]
-        for flt, keyval in list_filters:
-            flt_val = self.request.GET.get(flt, '')
-            flt_val = flt_val.split(',') if flt_val else []
-            self.curr_filters.update({flt: flt_val})
-            if len(flt_val):
-                qs = qs.filter(**{'{}__in'.format(keyval): flt_val})
-        # price range
-        try:
-            self.price_range = (
-                float(self.request.GET.get('min_price', '0')), float(self.request.GET.get('max_price', '2500'))
-            )
-            qs = qs.filter(Q(price__gte=self.price_range[0]) & Q(price__lte=self.price_range[1]))
-        except ValueError:
-            self.price_range = (0, 2500)
+        # apply size filter
+        qs = self.apply_filter(qs, 'size', 'productitem__size')
+
+        # # sizes
+        # flt_val = self.request.GET.get('size', '')
+        # self.curr_filters.update({'size': flt_val})
+        # flt_val = flt_val.split(',') if flt_val else []
+        # if len(flt_val):
+        #     sku_size = np.array(qs.values_list('sku', 'productitem__size').distinct())
+        #     print(sku_size.T[1])
+        #     print(flt_val)
+        #     sku_list = sku_size.T[0][sku_size.T[1] in flt_val]
+        #     print(sku_list)
 
         # order by
         if self.curr_order == 'best':
@@ -145,6 +154,16 @@ class HomeView(ListView):
         else:
             qs = qs.order_by(self.curr_order)
 
+        return qs
+
+    def apply_filter(self, qs, flt, keyval=None):
+        if not keyval:
+            keyval = flt
+        flt_val = self.request.GET.get(flt, '')
+        self.curr_filters.update({flt: flt_val})
+        flt_val = [urllib.parse.unquote(x) for x in flt_val.split(',')] if flt_val else []
+        if len(flt_val):
+            return qs.filter(**{'{}__in'.format(keyval): flt_val})
         return qs
 
     def get_context_data(self, **kwargs):
@@ -165,7 +184,7 @@ class HomeView(ListView):
         context['current_order'] = self.curr_order
         context['current_filters'] = self.curr_filters
         context['min_price'] = self.price_range[0]
-        context['max_price'] = self.price_range[0]
+        context['max_price'] = self.price_range[1]
         if context['is_paginated']:
             page = context['page_obj']
             pages = [i for i in page.paginator.page_range if abs(i - page.number) < 5]

@@ -76,12 +76,12 @@ body,
   display: flex;
   flex-direction: column;
   width: 80%;
-  margin: 50px 10px 30px 10px; /*上右下左*/
+  margin: 25px 10% 10px 10%; /*上右下左*/
 }
 
 .sliders_control {
   position: relative;
-  min-height: 50px;
+  min-height: 30px;
 }
 
 .form_control {
@@ -156,3 +156,8 @@ input[type="range"] {
   z-index: 1;
 }
 /* /slider css */
+
+span.textbox input {
+  border: 0px;
+  background-color: #FFF;
+}
