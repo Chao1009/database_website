@@ -48,7 +48,7 @@ class HomeView(ListView):
     curr_order = ''
     curr_filters = {}
 
-    sizes = []
+    size_groups = []
     sub_brands = []
     brands = []
     try:
@@ -83,10 +83,15 @@ class HomeView(ListView):
         else:
             qs = qs.order_by(self.curr_order)
 
-        self.sub_brands = natsorted(list(qs.values_list('sub_brand', flat=True).distinct()))
-        self.sizes = sort_size(list(np.unique(qs.values_list('productitem__size', flat=True))))
-        print(list(qs.values_list('productitem__size', flat=True).distinct()))
-        print(self.sizes)
+        self.sub_brands = natsorted(list(np.unique(qs.values_list('sub_brand', flat=True))))
+        size_grp = {}
+        for size in np.unique(qs.values_list('productitem__size', flat=True)):
+            if size[-1].isdigit():
+                size_grp['digit'] = size_grp.get('digit', []) + [size]
+            else:
+                size_grp[size[-1]] = size_grp.get(size[-1], []) + [size]
+        self.size_groups = [sort_size(values) for _, values in size_grp.items()]
+        print(self.size_groups)
         return qs
 
     def get_context_data(self, **kwargs):
@@ -94,7 +99,15 @@ class HomeView(ListView):
         # brand list
         context['brands'] = self.brands
         context['models'] = self.sub_brands
-        context['sizes'] = self.sizes
+        # special treatment for sizes, group for columns
+        n_size_col = 3
+        lst = []
+        for ll in self.size_groups:
+            nn = len(ll) % n_size_col
+            if nn > 0:
+                nn = n_size_col - nn
+            lst += ll + ['']*nn
+        context['size_groups'] = list(zip(*[iter(lst)]*n_size_col))
         context['current_brand'] = self.curr_brand
         context['current_order'] = self.curr_order
         context['current_filters'] = self.curr_filters

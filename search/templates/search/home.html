@@ -7,13 +7,6 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<title>jQuery双向滑动杆 设置数值百分比DEMO演示</title>
-
-<style type="text/css">
-.demo{width:350px; margin:100px auto 10px auto}
-#g1,#g2{margin-top:50px}
-</style>
-
 <link rel="stylesheet" href="{% static 'search/css/jquery.range.css' %}" />
 
 </head>
@@ -99,8 +92,9 @@
                   </h2>
                   <div id="model-filter-panel-box" class="accordion-collapse collapse" aria-labelledby="model-filter-panel">
                     <div class="list-group">
-                      <a href="#" class="list-group-item list-group-item-action">Placeholder#1</a>
-                      <a href="#" class="list-group-item list-group-item-action">Placeholder#2</a>
+                      {% for model in models %}
+                      <a class="list-group-item list-group-item-action">{{model}}</a>
+                      {% endfor %}
                     </div>
                   </div>
                 </div>
@@ -118,8 +112,17 @@
                   </h2>
                   <div id="size-filter-panel-box" class="accordion-collapse collapse" aria-labelledby="model-filter-panel">
                     <div class="list-group">
-                      <a href="#" class="list-group-item list-group-item-action">Placeholder#1</a>
-                      <a href="#" class="list-group-item list-group-item-action">Placeholder#2</a>
+                      {% for size_group in size_groups %}
+                      <div class="list-group list-group-horizontal">
+                        {% for size in size_group %}
+                        {% if size %}
+                        <a class="list-group-item list-group-item-action flex-fill">{{size}}</a>
+                        {% else %}
+                        <a class="list-group-item list-group-item-action flex-fill disabled"> </a>
+                        {% endif %}
+                        {% endfor %}
+                      </div>
+                      {% endfor %}
                     </div>
                   </div>
                 </div>
@@ -131,7 +134,7 @@
                     <button class="accordion-button collapsed mdb-color lighten-1 text-white" type="button"
                             style="$accordion-icon-color: white;"
                             data-bs-toggle="collapse" data-bs-target="#price-filter-panel-box"
-                            aria-expanded="true" aria-controls="price-filter-panel-box">
+                            aria-expanded="false" aria-controls="price-filter-panel-box">
                       Price Range
                     </button>
                   </h2>
@@ -149,7 +152,7 @@
                         }
                     </script>
 
-                    <div class="demo">
+                    <div class="demo" style="width:350px; margin:100px auto 10px auto">
                       <input class="range-slider" type="hidden" value="10,89"/>
                       <!-- <button id="g2">获取值</button> -->
                     </div>
