@@ -10,7 +10,8 @@ from isodate import parse_duration
 from django.db.utils import OperationalError
 from django.conf import settings
 from django.shortcuts import render, redirect
-from django.db.models import Q
+from django.db.models import Q, F
+from django.db.models import Min, Max, Sum
 from django.views.generic import ListView, DetailView, View
 from django.core.paginator import InvalidPage
 from django.http import Http404
@@ -152,7 +153,10 @@ class HomeView(LoginRequiredMixin, ListView):
 
         # order by
         if self.curr_order == 'best':
-            qs = qs.order_by('-top_seller', 'top_seller_priority')
+            qs = qs.annotate(
+                sales=Sum(F('productitem__sold')*F('productitem__sold_price'), output_field=models.FloatField())
+            )
+            qs = qs.order_by('-top_seller', 'top_seller_priority', '-sales')
         else:
             qs = qs.order_by(self.curr_order)
         return qs
